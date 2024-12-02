@@ -1,0 +1,132 @@
+{# templates/contact.html #}
+{% extends 'base.html' %}
+
+{% block title %}تماس با ما | فروشگاه آنلاین{% endblock %}
+
+{% block content %}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Contact Form -->
+        <div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-2xl font-bold mb-6">فرم تماس</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">نام و نام خانوادگی</label>
+                        <input type="text" name="name" required
+                               class="w-full border rounded p-2">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">ایمیل</label>
+                        <input type="email" name="email" required
+                               class="w-full border rounded p-2">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">موضوع</label>
+                        <input type="text" name="subject" required
+                               class="w-full border rounded p-2">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">پیام</label>
+                        <textarea name="message" rows="5" required
+                                  class="w-full border rounded p-2"></textarea>
+                    </div>
+                    <button type="submit" 
+                            class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                        ارسال پیام
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-2xl font-bold mb-6">اطلاعات تماس</h2>
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="font-semibold mb-2">آدرس</h3>
+                        <p class="text-gray-600">تهران، خیابان ...</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-2">تلفن</h3>
+                        <p class="text-gray-600">۰۲۱-XXXXXXXX</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-2">ایمیل</h3>
+                        <p class="text-gray-600">info@example.com</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-2">ساعات کاری</h3>
+                        <p class="text-gray-600">شنبه تا چهارشنبه: ۹ صبح تا ۶ عصر</p>
+                        <p class="text-gray-600">پنجشنبه: ۹ صبح تا ۲ بعد از ظهر</p>
+                    </div>
+
+                    <!-- Social Media Links -->
+                    <div class="mt-6">
+                        <h3 class="font-semibold mb-3">ما را در شبکه‌های اجتماعی دنبال کنید</h3>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-600 hover:text-blue-600">
+                                <i class="fab fa-instagram text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-600 hover:text-blue-600">
+                                <i class="fab fa-telegram text-2xl"></i>
+                            </a>
+                            <a href="#" class="text-gray-600 hover:text-blue-600">
+                                <i class="fab fa-whatsapp text-2xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map -->
+            <div class="mt-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-2xl font-bold mb-6">موقعیت ما روی نقشه</h2>
+                    <div class="relative w-full h-64 rounded-lg overflow-hidden">
+                        <!-- Replace src with your actual map embed URL -->
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=your-embed-url"
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            class="absolute inset-0">
+                        </iframe>
+                    </div>
+                    
+                    <!-- Additional Navigation Info -->
+                    <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+                        <h3 class="font-semibold mb-2">راهنمای مسیر</h3>
+                        <p class="text-gray-600 text-sm">برای دسترسی به فروشگاه می‌توانید از مترو ایستگاه ... استفاده کنید. همچنین اتوبوس‌های خط ... و ... از مقابل فروشگاه عبور می‌کنند.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="mt-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-2xl font-bold mb-6">سوالات متداول</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-semibold mb-2">ساعات پاسخگویی تلفنی چگونه است؟</h3>
+                            <p class="text-gray-600">همه روزه از ساعت ۹ صبح تا ۶ عصر پاسخگوی تماس‌های شما هستیم.</p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2">زمان پاسخگویی به ایمیل‌ها چقدر است؟</h3>
+                            <p class="text-gray-600">معمولاً در کمتر از ۲۴ ساعت کاری به ایمیل‌های شما پاسخ می‌دهیم.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Add Font Awesome for social media icons -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+{% endblock %}

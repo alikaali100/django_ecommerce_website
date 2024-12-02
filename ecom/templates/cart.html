@@ -1,0 +1,77 @@
+{# templates/cart.html #}
+{% extends 'base.html' %}
+
+{% block title %}سبد خرید | فروشگاه آنلاین{% endblock %}
+
+{% block content %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Cart Items -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-2xl font-bold mb-6">سبد خرید</h2>
+                {% for item in cart_items %}
+                    <div class="flex items-center justify-between border-b py-4">
+                        <div class="flex items-center space-x-4 space-x-reverse">
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
+                                 class="w-20 h-20 object-cover rounded">
+                            <div>
+                                <h3 class="font-semibold">{{ item.product.name }}</h3>
+                                <p class="text-gray-600">{{ item.product.price }} تومان</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4 space-x-reverse">
+                            <input type="number" min="1" value="{{ item.quantity }}"
+                                   onchange="updateQuantity({{ item.id }}, this.value)"
+                                   class="border rounded p-2 w-20 text-center">
+                            <button onclick="removeFromCart({{ item.id }})"
+                                    class="text-red-600 hover:text-red-800">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-gray-600 text-center py-8">سبد خرید شما خالی است.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow p-6 sticky top-4">
+                <h2 class="text-xl font-bold mb-4">خلاصه سفارش</h2>
+                <div class="space-y-3 mb-4">
+                    <div class="flex justify-between">
+                        <span>جمع کل</span>
+                        <span>{{ cart.total }} تومان</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>تخفیف</span>
+                        <span>{{ cart.discount }} تومان</span>
+                    </div>
+                    <div class="flex justify-between font-bold">
+                        <span>مبلغ قابل پرداخت</span>
+                        <span>{{ cart.final_total }} تومان</span>
+                    </div>
+                </div>
+                
+                <!-- Discount Code Form -->
+                <div class="mb-4">
+                    <form class="flex space-x-2 space-x-reverse">
+                        <input type="text" placeholder="کد تخفیف" 
+                               class="flex-grow border rounded p-2">
+                        <button type="submit" 
+                                class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700">
+                            اعمال
+                        </button>
+                    </form>
+                </div>
+
+                <a href="{% url 'checkout' %}" 
+                   class="block w-full bg-blue-600 text-white text-center py-3 rounded-lg hover:bg-blue-700">
+                    ادامه فرایند خرید
+                </a>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,53 @@
+{# templates/products/list.html #}
+{% extends 'base.html' %}
+
+{% block title %}محصولات | فروشگاه آنلاین{% endblock %}
+
+{% block content %}
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Filters Sidebar -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow p-4">
+                <h2 class="text-xl font-bold mb-4">فیلترها</h2>
+                <form method="get">
+                    <!-- Categories -->
+                    <div class="mb-4">
+                        <h3 class="font-semibold mb-2">دسته‌بندی‌ها</h3>
+                        {% for category in categories %}
+                            <div class="flex items-center mb-2">
+                                <input type="checkbox" name="category" value="{{ category.id }}"
+                                       id="cat-{{ category.id }}" class="ml-2">
+                                <label for="cat-{{ category.id }}">{{ category.name }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="mb-4">
+                        <h3 class="font-semibold mb-2">محدوده قیمت</h3>
+                        <div class="flex items-center space-x-4 space-x-reverse">
+                            <input type="number" name="min_price" placeholder="حداقل"
+                                   class="w-full border rounded p-2">
+                            <span>تا</span>
+                            <input type="number" name="max_price" placeholder="حداکثر"
+                                   class="w-full border rounded p-2">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                        اعمال فیلترها
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="lg:col-span-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for product in products %}
+                    {% include 'components/product_card.html' with product=product %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
