@@ -14,7 +14,7 @@ class Customer(BaseModel):
         return f"{self.first_name} {self.last_name}"
 
 class Address(BaseModel):
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, related_name='addresses')
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='addresses')
     province = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     detailed_address = models.TextField(max_length=100)

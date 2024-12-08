@@ -12,7 +12,7 @@ class Category(BaseModel):
 class Product(BaseModel):
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=250)
-    price = models.PositiveIntegerField(max_length=10)
+    price = models.PositiveIntegerField()
     stock = models.PositiveIntegerField()
     brand = models.TextField(max_length=50)
     model = models.TextField(max_length=50)
@@ -35,8 +35,8 @@ class Discount(BaseModel):
         ('FA', 'Fixed Amount'),
     ]
     type = models.CharField(max_length=20, choices=DISCOUNT_TYPES)
-    amount = models.DecimalField(max_digits=3)
-    max_amount = models.DecimalField(max_digits=10,null=True, blank=True)
+    amount = models.IntegerField()
+    max_amount = models.IntegerField(null=True, blank=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
 
