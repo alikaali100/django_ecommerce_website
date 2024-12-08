@@ -24,7 +24,7 @@ class Order(BaseModel):
         ('completed','Completed'),
         ('canceled','Canceled')
     )
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='orders')
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='orders')
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
     discount_code = models.ForeignKey(DiscountCode, on_delete=models.SET_NULL, null=True, blank=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
