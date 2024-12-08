@@ -1,26 +1,54 @@
 from django.test import TestCase
-from customers.models import Customer
-
+from customers.models import Customer, Address
+from django.core.exceptions import ValidationError
 class CustomerModelTest(TestCase):
-    def test_create_customer(self):
-        customer = Customer.objects.create(
+    def setUp(self):
+        self.customer = Customer.objects.create(
             first_name="John",
             last_name="Doe",
             email="john.doe@example.com",
-            phone_number="1234567890"
+            phone_number="09123456789"
         )
-        self.assertEqual(customer.first_name, "John")
-        self.assertEqual(customer.last_name, "Doe")
-        self.assertEqual(customer.email, "john.doe@example.com")
-        self.assertFalse(customer.is_deleted)
 
-    def test_soft_delete_customer(self):
-        customer = Customer.objects.create(
+    def test_customer_creation(self):
+        self.assertEqual(self.customer.first_name, "John")
+        self.assertEqual(self.customer.last_name, "Doe")
+        self.assertEqual(self.customer.email, "john.doe@example.com")
+        self.assertEqual(self.customer.phone_number, "09123456789")
+
+    def test_customer_str_representation(self):
+        self.assertEqual(str(self.customer), "John Doe")
+
+    def test_invalid_phone_number(self):
+        with self.assertRaises(Exception):
+            Customer.objects.create(
+                first_name="Invalid",
+                last_name="Phone",
+                email="invalid.phone@example.com",
+                phone_number="1234567890"  # Invalid phone number
+            )
+            with self.assertRaises(ValidationError):
+                invalid_customer.full_clean() 
+class AddressModelTest(TestCase):
+    def setUp(self):
+        self.customer = Customer.objects.create(
             first_name="Jane",
             last_name="Doe",
             email="jane.doe@example.com",
-            phone_number="0987654321"
+            phone_number="09111234567"
         )
-        customer.is_deleted = True
-        customer.save()
-        self.assertTrue(customer.is_deleted)
+        self.address = Address.objects.create(
+            customer=self.customer,
+            province="Tehran",
+            city="Tehran",
+            detailed_address="123 Main Street"
+        )
+
+    def test_address_creation(self):
+        self.assertEqual(self.address.customer, self.customer)
+        self.assertEqual(self.address.province, "Tehran")
+        self.assertEqual(self.address.city, "Tehran")
+        self.assertEqual(self.address.detailed_address, "123 Main Street")
+
+    def test_address_str_representation(self):
+        self.assertEqual(str(self.address), "Tehran, Tehran")

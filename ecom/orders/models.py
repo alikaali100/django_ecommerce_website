@@ -42,7 +42,7 @@ class Order(BaseModel):
     total_amount = models.IntegerField()
 
     def __str__(self):
-        return f"Order {self.order_number} - {self.get_status_display()}"
+        return  f"Order {self.id} - {self.get_status_display()}"
     class Meta:
         verbose_name = _('order')
         verbose_name_plural = _('orders')

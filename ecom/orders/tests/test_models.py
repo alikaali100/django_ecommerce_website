@@ -1,42 +1,83 @@
 from django.test import TestCase
-from orders.models import Order, OrderItem
+from django.utils.timezone import now, timedelta
+from core.models import BaseModel
+from product.models import Product
 from customers.models import Customer, Address
-from product.models import Product, Category
+from orders.models import DiscountCode, Order, OrderItem
+
+class DiscountCodeModelTest(TestCase):
+    def setUp(self):
+        self.discount_code = DiscountCode.objects.create(
+            code="SUMMER2024",
+            type="PG",
+            amount=10,
+            max_amount=50,
+            start_date=now(),
+            end_date=now() + timedelta(days=30),
+            usage_limit=100,
+        )
+
+    def test_discount_code_creation(self):
+        self.assertEqual(self.discount_code.code, "SUMMER2024")
+        self.assertEqual(self.discount_code.type, "PG")
+        self.assertEqual(self.discount_code.amount, 10)
+        self.assertEqual(self.discount_code.max_amount, 50)
+        self.assertEqual(self.discount_code.usage_limit, 100)
 
 class OrderModelTest(TestCase):
     def setUp(self):
-        self.customer = Customer.objects.create(
-            first_name="John",
-            last_name="Doe",
-            email="john.doe@example.com"
+        self.customer = Customer.objects.create(first_name="John",last_name="Doe",email="ali@gmail.com")
+        self.address = Address.objects.create(customer=self.customer, province="Main St", city="Cityville", detailed_address="State")
+        self.discount_code = DiscountCode.objects.create(
+            code="SUMMER2024",
+            type="PG",
+            amount=10,
+            max_amount=50,
+            start_date=now(),
+            end_date=now() + timedelta(days=30),
+            usage_limit=100,
         )
-        self.address = Address.objects.create(
-            customer=self.customer,
-            province="California",
-            city="San Francisco",
-            detailed_address="123 Market St"
-        )
-        self.category = Category.objects.create(name="Books")
-        self.product = Product.objects.create(
-            name="Django for Beginners",
-            price=39.99,
-            stock=10,
-            category=self.category
-        )
-
-    def test_create_order(self):
-        order = Order.objects.create(
+        self.order = Order.objects.create(
             customer=self.customer,
             address=self.address,
-            total_amount=39.99,
-            status="Pending"
+            discount_code=self.discount_code,
+            total_amount=500,
         )
-        OrderItem.objects.create(
-            order=order,
+
+    def test_order_creation(self):
+        self.assertEqual(self.order.customer, self.customer)
+        self.assertEqual(self.order.address, self.address)
+        self.assertEqual(self.order.discount_code, self.discount_code)
+        self.assertEqual(self.order.total_amount, 500)
+        self.assertEqual(self.order.status, Order.PENDING)
+
+    def test_order_str(self):
+        self.assertEqual(str(self.order), f"Order {self.order.id} - Pending")
+
+class OrderItemModelTest(TestCase):
+    def setUp(self):
+        self.customer = Customer.objects.create(first_name="John",last_name="Doe",email="ali1@gmail.com")
+        self.address = Address.objects.create(customer=self.customer, province="Main St", city="Cityville", detailed_address="State")
+        self.product = Product.objects.create(name="Test Product", price=100,stock=20)
+        self.order = Order.objects.create(
+            customer=self.customer,
+            address=self.address,
+            total_amount=500,
+        )
+        self.order_item = OrderItem.objects.create(
+            order=self.order,
             product=self.product,
-            quantity=1,
-            price=39.99,
-            discount_amount=0
+            quantity=2,
+            price=200,
+            discount_amount=20,
         )
-        self.assertEqual(order.items.count(), 1)
-        self.assertEqual(order.items.first().product, self.product)
+
+    def test_order_item_creation(self):
+        self.assertEqual(self.order_item.order, self.order)
+        self.assertEqual(self.order_item.product, self.product)
+        self.assertEqual(self.order_item.quantity, 2)
+        self.assertEqual(self.order_item.price, 200)
+        self.assertEqual(self.order_item.discount_amount, 20)
+
+    def test_order_item_str(self):
+        self.assertEqual(str(self.order_item), f"2 x {self.product.name} (Order #{self.order.id})")

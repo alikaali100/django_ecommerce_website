@@ -6,10 +6,15 @@ class Customer(BaseModel):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
-    phone_number = models.CharField(max_length=11,  
-            validators=[
-            RegexValidator(regex=r'^09\d{9}$')])
-
+    phone_number = models.CharField(
+        max_length=11,
+        validators=[
+            RegexValidator(
+                regex=r'^09\d{9}$',
+                message="Phone number must start with '09' and be 11 digits long."
+            )
+        ]
+    )
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
