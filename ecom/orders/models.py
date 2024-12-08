@@ -2,15 +2,16 @@ from django.db import models
 from core.models import BaseModel
 from product.models import Product
 from customers.models import Customer,Address
+from django.utils.translation import gettext_lazy as _
 class DiscountCode(BaseModel):
     DISCOUNT_TYPES = [
-        ('percentage', 'Percentage'),
-        ('fixed', 'Fixed Amount'),
+        ('PG', 'Percentage'),
+        ('FA', 'Fixed Amount'),
     ]
     code = models.CharField(max_length=50, unique=True)
     type = models.CharField(max_length=20, choices=DISCOUNT_TYPES)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    max_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    amount = models.DecimalField(max_digits=3)
+    max_amount = models.DecimalField(max_digits=10, null=True, blank=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     usage_limit = models.PositiveIntegerField()
@@ -19,26 +20,39 @@ class DiscountCode(BaseModel):
         return self.code
 
 class Order(BaseModel):
-    STATUS =(
-        ('pending','Pending'),
-        ('completed','Completed'),
-        ('canceled','Canceled')
+    PENDING = 'pending'
+    COMPLETED = 'completed'
+    CANCELED = 'canceled'
+
+    STATUS_CHOICES = [
+        (PENDING, _('Pending')),
+        (COMPLETED, _('Completed')),
+        (CANCELED, _('Canceled')),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=PENDING,
+        help_text=_('Status of the order'),
     )
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='orders')
-    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, on_delete=models.SET_NULL)
     discount_code = models.ForeignKey(DiscountCode, on_delete=models.SET_NULL, null=True, blank=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=50,choices=STATUS)
+    total_amount = models.DecimalField()
 
     def __str__(self):
-        return f"Order #{self.id} by {self.customer}"
+        return f"Order {self.order_number} - {self.get_status_display()}"
+    class Meta:
+        verbose_name = _('order')
+        verbose_name_plural = _('orders')
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    price = models.DecimalField()
+    discount_amount = models.DecimalField(max_digits=10)
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} (Order #{self.order.id})"

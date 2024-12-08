@@ -10,24 +10,33 @@ class Category(BaseModel):
         return self.name
 
 class Product(BaseModel):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    name = models.CharField(max_length=50)
+    description = models.TextField(max_length=250)
+    price = models.PositiveIntegerField(max_length=10)
     stock = models.PositiveIntegerField()
+    brand = models.TextField(max_length=50)
+    model = models.TextField(max_length=50)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='products')
     image = models.ImageField(upload_to='media/products', blank=True, null=True)
 
     def __str__(self):
         return self.name
 
+class ProductFeature(models.Model):
+    key = models.CharField(max_length=50)
+    value = models.CharField(max_length=50)
+    display_order = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.key}: {self.value}"
 class Discount(BaseModel):
     DISCOUNT_TYPES = [
-        ('percentage', 'Percentage'),
-        ('fixed', 'Fixed Amount'),
+        ('PG', 'Percentage'),
+        ('FA', 'Fixed Amount'),
     ]
     type = models.CharField(max_length=20, choices=DISCOUNT_TYPES)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    max_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    amount = models.DecimalField(max_digits=3)
+    max_amount = models.DecimalField(max_digits=10,null=True, blank=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
 
