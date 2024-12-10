@@ -13,3 +13,7 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['id', 'name', 'description', 'products']
 
+class DiscountSerializer(serializers.ModelSerializer):
+    class Meta :
+        model = Discount
+        field = '__all__'
