@@ -1,7 +1,7 @@
 from rest_framework import generics,filters
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Product,Category,Discount
-from .serializers import ProductSerializer,CategorySerializer,DiscountSerializer
+from .models import Product,Category,Discount,ProductFeature
+from .serializers import ProductSerializer,CategorySerializer,DiscountSerializer,ProductFeatureSerializer
 
 class ProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
@@ -30,3 +30,11 @@ class DiscountListView(generics.ListAPIView):
 class DiscountDetailView(generics.RetrieveAPIView):
     queryset = Discount.objects.all()
     serializer_class = DiscountSerializer
+
+class ProductFeatureListView(generics.ListAPIView):
+    queryset = ProductFeature.objects.all()
+    serializer_class = ProductFeatureSerializer
+
+class ProductFeatureDetailView(generics.RetrieveAPIView):
+    queryset = ProductFeature.objects.all()
+    serializer_class = ProductFeatureSerializer
