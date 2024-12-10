@@ -1,7 +1,7 @@
 from django.urls import path
-from django.views.generic import TemplateView
+from .views import ProductListView, ProductDetailView
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='products/lsit.html'), name='products'),  # لیست محصولات
-    path('<int:id>/', TemplateView.as_view(template_name='products/detail.html'), name='product_detail'),  # جزئیات محصول
+    path('api/products/', ProductListView.as_view(), name='product-list'),
+    path('api/products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
 ]
