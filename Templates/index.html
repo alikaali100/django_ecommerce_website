@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحه اصلی | فروشگاه آنلاین</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow">
+        <nav class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="#" class="text-xl font-bold">فروشگاه</a>
+                    <a href="#products" class="text-gray-600 hover:text-gray-800">محصولات</a>
+                    <a href="#contact" class="text-gray-600 hover:text-gray-800">تماس با ما</a>
+                </div>
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="#" class="text-gray-600 hover:text-gray-800">
+                        <span class="relative">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">0</span>
+                        </span>
+                    </a>
+                    <a href="#login" class="text-gray-600 hover:text-gray-800">ورود</a>
+                    <a href="#register" class="text-gray-600 hover:text-gray-800">ثبت‌نام</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <div class="bg-blue-600 text-white rounded-lg p-8 mb-8">
+            <div class="max-w-2xl">
+                <h1 class="text-4xl font-bold mb-4">به فروشگاه ما خوش آمدید</h1>
+                <p class="text-xl mb-6">بهترین محصولات با بهترین قیمت‌ها</p>
+                <a href="#products" class="bg-white text-blue-600 px-6 py-2 rounded-lg hover:bg-gray-100">
+                    مشاهده محصولات
+                </a>
+            </div>
+        </div>
+
+        <!-- Featured Products -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">محصولات ویژه</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Sample product cards -->
+                <div class="bg-red-500 text-white shadow rounded-lg p-4">
+                    <img src="static/1.jpg" alt="محصول ۱" class="w-full h-60 object-cover rounded mb-4">
+                    <h3 class="text-lg font-bold">محصول ۱</h3>
+                    <p class="text-sm">توضیحات محصول ویژه</p>
+                </div>
+                <div class="bg-red-500 text-white shadow rounded-lg p-4">
+                    <img src="static/1.jpg" alt="محصول ۲" class="w-full h-60 object-cover rounded mb-4">
+                    <h3 class="text-lg font-bold">محصول ۲</h3>
+                    <p class="text-sm">توضیحات محصول ویژه</p>
+                </div>
+                <div class="bg-red-500 text-white shadow rounded-lg p-4">
+                    <img src="static/1.jpg" alt="محصول ۳" class="w-full h-60 object-cover rounded mb-4">
+                    <h3 class="text-lg font-bold">محصول ۳</h3>
+                    <p class="text-sm">توضیحات محصول ویژه</p>
+                </div>
+                <div class="bg-red-500 text-white shadow rounded-lg p-4">
+                    <img src="static/1.jpg" alt="محصول ۴" class="w-full h-60 object-cover rounded mb-4">
+                    <h3 class="text-lg font-bold">محصول ۴</h3>
+                    <p class="text-sm">توضیحات محصول ویژه</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Discounted Products -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">تخفیف‌های ویژه</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                <!-- Sample discounted product cards -->
+                <div class="bg-white shadow rounded-lg p-4 relative">
+                    <img src="static/1.jpg" alt="محصول تخفیف خورده ۱" class="w-full h-60 object-cover rounded mb-4">
+                    <div class="absolute top-4 right-4 bg-red-500 text-white text-sm font-bold rounded-full w-12 h-12 flex items-center justify-center">
+                        20%
+                    </div>
+                    <h3 class="text-lg font-bold">محصول تخفیف خورده ۱</h3>
+                    <p class="text-sm text-gray-600">توضیحات محصول</p>
+                    <p class="text-gray-800 font-bold">100,000 تومان</p>
+                </div>
+                <div class="bg-white shadow rounded-lg p-4 relative">
+                    <img src="static/1.jpg" alt="محصول تخفیف خورده ۲" class="w-full h-60 object-cover rounded mb-4">
+                    <div class="absolute top-4 right-4 bg-red-500 text-white text-sm font-bold rounded-full w-12 h-12 flex items-center justify-center">
+                        30%
+                    </div>
+                    <h3 class="text-lg font-bold">محصول تخفیف خورده ۲</h3>
+                    <p class="text-sm text-gray-600">توضیحات محصول</p>
+                    <p class="text-gray-800 font-bold">200,000 تومان</p>
+                </div>
+                <div class="bg-white shadow rounded-lg p-4 relative">
+                    <img src="static/1.jpg" alt="محصول تخفیف خورده ۳" class="w-full h-60 object-cover rounded mb-4">
+                    <div class="absolute top-4 right-4 bg-red-500 text-white text-sm font-bold rounded-full w-12 h-12 flex items-center justify-center">
+                        15%
+                    </div>
+                    <h3 class="text-lg font-bold">محصول تخفیف خورده ۳</h3>
+                    <p class="text-sm text-gray-600">توضیحات محصول</p>
+                    <p class="text-gray-800 font-bold">150,000 تومان</p>
+                </div>
+                <div class="bg-white shadow rounded-lg p-4 relative">
+                    <img src="static/1.jpg" alt="محصول تخفیف خورده ۴" class="w-full h-60 object-cover rounded mb-4">
+                    <div class="absolute top-4 right-4 bg-red-500 text-white text-sm font-bold rounded-full w-12 h-12 flex items-center justify-center">
+                        40%
+                    </div>
+                    <h3 class="text-lg font-bold">محصول تخفیف خورده ۴</h3>
+                    <p class="text-sm text-gray-600">توضیحات محصول</p>
+                    <p class="text-gray-800 font-bold">80,000 تومان</p>
+                </div>
+                <div class="bg-white shadow rounded-lg p-4 relative">
+                    <img src="static/1.jpg" alt="محصول تخفیف خورده ۵" class="w-full h-60 object-cover rounded mb-4">
+                    <div class="absolute top-4 right-4 bg-red-500 text-white text-sm font-bold rounded-full w-12 h-12 flex items-center justify-center">
+                        25%
+                    </div>
+                    <h3 class="text-lg font-bold">محصول تخفیف خورده ۵</h3>
+                    <p class="text-sm text-gray-600">توضیحات محصول</p>
+                    <p class="text-gray-800 font-bold">120,000 تومان</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">درباره ما</h3>
+                    <p class="text-gray-300">توضیحات مختصر درباره فروشگاه و خدمات آن</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">لینک‌های مفید</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#about" class="text-gray-300 hover:text-white">درباره ما</a></li>
+                        <li><a href="#contact" class="text-gray-300 hover:text-white">تماس با ما</a></li>
+                        <li><a href="#faq" class="text-gray-300 hover:text-white">سوالات متداول</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">تماس با ما</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>آدرس: تهران، خیابان ...</li>
+                        <li>تلفن: ۰۲۱-XXXXXXXX</li>
+                        <li>ایمیل: info@example.com</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

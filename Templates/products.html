@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فروشگاه آنلاین لوازم دیجیتال</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header اصلی سایت (بدون تغییر) -->
+    <header class="bg-white shadow">
+        <nav class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="#" class="text-xl font-bold">فروشگاه</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">محصولات</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">تماس با ما</a>
+                </div>
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="#" class="text-gray-600 hover:text-gray-800">
+                        <span class="relative">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">0</span>
+                        </span>
+                    </a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">حساب کاربری</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- نوار ناوبری جدید (Navbar پایین‌تر) -->
+    <nav class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <!-- دسته‌بندی‌ها -->
+                <div class="flex space-x-8">
+                    <a href="#" class="text-gray-300 hover:text-white">گوشی‌های موبایل</a>
+                    <a href="#" class="text-gray-300 hover:text-white">لپ‌تاپ و کامپیوتر</a>
+                    <a href="#" class="text-gray-300 hover:text-white">لوازم جانبی</a>
+                    <a href="#" class="text-gray-300 hover:text-white">تلویزیون و وسایل صوتی</a>
+                    <a href="#" class="text-gray-300 hover:text-white">دوربین و تجهیزات عکاسی</a>
+                    <a href="#" class="text-gray-300 hover:text-white">گیمینگ</a>
+                </div>
+
+                <!-- جستجو -->
+                <div class="relative">
+                    <input type="text" class="px-4 py-2 rounded-lg w-80 border border-gray-300 focus:outline-none" placeholder="جستجو کنید...">
+                    <button class="absolute left-0 top-0 mt-2 ml-2 text-gray-600 hover:text-gray-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18l6-6M10 18a8 8 0 1110-10 8 8 0 010 16z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- محتوا و محصولات -->
+    <main class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">محصولات ما</h1>
+        <!-- Product list -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
+            <!-- Product 1 -->
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img src="static/1.jpg" alt="گوشی موبایل" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold text-gray-800">گوشی موبایل سامسونگ</h2>
+                    <p class="text-gray-600">گوشی موبایل سامسونگ با ویژگی‌های برجسته و صفحه نمایش OLED.</p>
+                    <p class="text-lg font-bold text-gray-900 mt-2">۳۰۰,۰۰۰ تومان</p>
+                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
+                </div>
+            </div>
+            <!-- Product 2 -->
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img src="static/1.jpg" alt="لپ‌تاپ اچ‌پی" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold text-gray-800">لپ‌تاپ اچ‌پی</h2>
+                    <p class="text-gray-600">لپ‌تاپ HP با پردازنده Intel و حافظه ۸ گیگابایت.</p>
+                    <p class="text-lg font-bold text-gray-900 mt-2">۶,۰۰۰,۰۰۰ تومان</p>
+                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
+                </div>
+            </div>
+            <!-- Product 3 -->
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img src="static/1.jpg" alt="دوربین کانن" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold text-gray-800">دوربین کانن</h2>
+                    <p class="text-gray-600">دوربین دیجیتال کانن با رزولوشن ۲۴ مگاپیکسل.</p>
+                    <p class="text-lg font-bold text-gray-900 mt-2">۸,۵۰۰,۰۰۰ تومان</p>
+                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
+                </div>
+            </div>
+            <!-- Product 4 -->
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img src="static/1.jpg" alt="گوشی شیائومی" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold text-gray-800">گوشی شیائومی</h2>
+                    <p class="text-gray-600">گوشی هوشمند شیائومی با پردازنده Snapdragon و دوربین ۱۰۸ مگاپیکسل.</p>
+                    <p class="text-lg font-bold text-gray-900 mt-2">۴,۲۰۰,۰۰۰ تومان</p>
+                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
+                </div>
+            </div>
+            <!-- Product 5 -->
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img src="static/1.jpg" alt="تلویزیون ال‌جی" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold text-gray-800">تلویزیون ال‌جی</h2>
+                    <p class="text-gray-600">تلویزیون ۴K ال‌جی با تکنولوژی OLED.</p>
+                    <p class="text-lg font-bold text-gray-900 mt-2">۱۵,۰۰۰,۰۰۰ تومان</p>
+                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
+                </div>
+            </div>
+            <!-- Product 6 -->
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img src="static/1.jpg" alt="ساعت هوشمند اپل" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold text-gray-800">ساعت هوشمند اپل</h2>
+                    <p class="text-gray-600">ساعت هوشمند اپل با ویژگی‌های سلامت و ورزش.</p>
+                    <p class="text-lg font-bold text-gray-900 mt-2">۵,۰۰۰,۰۰۰ تومان</p>
+                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
+                </div>
+            </div>
+            <!-- Add remaining products 7-12 -->
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <img src="static/1.jpg" alt="محصول 7" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold text-gray-800">محصول 7</h2>
+                    <p class="text-gray-600">توضیحات محصول 7</p>
+                    <p class="text-lg font-bold text-gray-900 mt-2">قیمت ۷</p>
+                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
+                </div>
+            </div>
+            <!-- Add more products up to Product 12 -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">درباره ما</h3>
+                    <p class="text-gray-300">فروشگاه آنلاین لوازم دیجیتال با تنوع بالا و قیمت‌های رقابتی.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">لینک‌های مفید</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">درباره ما</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">تماس با ما</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">سوالات متداول</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">تماس با ما</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>آدرس: تهران، خیابان ...</li>
+                        <li>تلفن: ۰۲۱-XXXXXXXX</li>
+                        <li>ایمیل: info@example.com</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
