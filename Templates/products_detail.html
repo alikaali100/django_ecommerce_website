@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جزئیات محصول</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header اصلی سایت -->
+    <header class="bg-white shadow">
+        <nav class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="#" class="text-xl font-bold">فروشگاه</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">محصولات</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">تماس با ما</a>
+                </div>
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="#" class="text-gray-600 hover:text-gray-800">
+                        <span class="relative">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">0</span>
+                        </span>
+                    </a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">حساب کاربری</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- محتوای اصلی -->
+    <main>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <!-- تصویر محصول -->
+            <div>
+                <img src="static/1.jpg" alt="محصول خاص" class="rounded-lg shadow-lg w-full">
+            </div>
+            <!-- جزئیات محصول -->
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">گوشی موبایل سامسونگ</h1>
+                <p class="text-gray-600 mb-6">
+                    گوشی موبایل سامسونگ با ویژگی‌های برجسته شامل پردازنده قدرتمند، دوربین فوق‌العاده، و صفحه نمایش OLED با کیفیت بالا.
+                </p>
+                <p class="text-2xl font-bold text-blue-600 mb-4">۳۰۰,۰۰۰ تومان</p>
+                <button class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
+            </div>
+        </div>
+        <!-- توضیحات اضافی -->
+        <div class="mt-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">توضیحات بیشتر</h2>
+            <p class="text-gray-600 leading-relaxed">
+                این محصول دارای طراحی زیبا و کاربرپسند بوده و از فناوری‌های جدید بهره می‌برد. مناسب برای کاربران حرفه‌ای و کسانی که به دنبال بهترین کیفیت هستند.
+            </p>
+        </div>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">درباره ما</h3>
+                    <p class="text-gray-300">فروشگاه آنلاین لوازم دیجیتال با تنوع بالا و قیمت‌های رقابتی.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">لینک‌های مفید</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">درباره ما</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">تماس با ما</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">سوالات متداول</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">تماس با ما</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>آدرس: تهران، خیابان ...</li>
+                        <li>تلفن: ۰۲۱-XXXXXXXX</li>
+                        <li>ایمیل: info@example.com</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>    
+</body>
+</html>
