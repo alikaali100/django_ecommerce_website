@@ -16,9 +16,9 @@ class CategorySerializer(serializers.ModelSerializer):
 class DiscountSerializer(serializers.ModelSerializer):
     class Meta :
         model = Discount
-        field = '__all__'
+        fields = '__all__'
 
 class ProductFeatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductFeature
-        field='__all__'
+        fields='__all__'
