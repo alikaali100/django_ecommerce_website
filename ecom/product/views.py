@@ -1,40 +1,24 @@
-from rest_framework import generics,filters
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Product,Category,Discount,ProductFeature
-from .serializers import ProductSerializer,CategorySerializer,DiscountSerializer,ProductFeatureSerializer
+from rest_framework import filters
+from .models import Product, Category, Discount, ProductFeature
+from .serializers import ProductSerializer, CategorySerializer, DiscountSerializer, ProductFeatureSerializer
 
-class ProductListView(generics.ListAPIView):
+class ProductViewSet(ReadOnlyModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    pagination_class = None 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['category', 'brand'] 
+    filterset_fields = ['category', 'brand']
     search_fields = ['name', 'description']
 
-class ProductDetailView(generics.RetrieveAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-class CategoryListView(generics.ListAPIView):
+class CategoryViewSet(ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
-class CategoryDetailView(generics.RetrieveAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-
-class DiscountListView(generics.ListAPIView):
+class DiscountViewSet(ReadOnlyModelViewSet):
     queryset = Discount.objects.all()
     serializer_class = DiscountSerializer
 
-class DiscountDetailView(generics.RetrieveAPIView):
-    queryset = Discount.objects.all()
-    serializer_class = DiscountSerializer
-
-class ProductFeatureListView(generics.ListAPIView):
-    queryset = ProductFeature.objects.all()
-    serializer_class = ProductFeatureSerializer
-
-class ProductFeatureDetailView(generics.RetrieveAPIView):
+class ProductFeatureViewSet(ReadOnlyModelViewSet):
     queryset = ProductFeature.objects.all()
     serializer_class = ProductFeatureSerializer

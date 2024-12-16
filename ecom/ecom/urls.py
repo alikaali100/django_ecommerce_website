@@ -4,5 +4,5 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('product.urls')),
+    path('api/', include('product.urls')),
 ]
