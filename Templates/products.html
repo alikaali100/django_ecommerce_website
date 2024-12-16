@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>فروشگاه آنلاین لوازم دیجیتال</title>
+    <script src="script.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
@@ -12,11 +13,26 @@
     <header class="bg-white shadow">
         <nav class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
+                <!-- Links -->
                 <div class="flex items-center space-x-4 space-x-reverse">
                     <a href="#" class="text-xl font-bold">فروشگاه</a>
                     <a href="#" class="text-gray-600 hover:text-gray-800">محصولات</a>
                     <a href="#" class="text-gray-600 hover:text-gray-800">تماس با ما</a>
                 </div>
+                <!-- Search Icon and Bar -->
+                <div class="relative">
+                    <!-- Search Icon for Small Screens -->
+                    <button id="search-icon" class="lg:hidden text-gray-600 hover:text-gray-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18l6-6M10 18a8 8 0 1110-10 8 8 0 010 16z"></path>
+                        </svg>
+                    </button>
+                    <!-- Search Bar -->
+                    <div id="search-bar" class="hidden lg:block absolute lg:relative top-12 left-0 lg:top-0 bg-white lg:bg-transparent w-full lg:w-auto p-4 lg:p-0 border border-gray-300 lg:border-none rounded-lg lg:rounded-none">
+                        <input type="text" class="px-4 py-2 rounded-lg w-full lg:w-80 border border-gray-300 focus:outline-none" placeholder="جستجو کنید...">
+                    </div>
+                </div>
+                <!-- Cart and Account -->
                 <div class="flex items-center space-x-4 space-x-reverse">
                     <a href="#" class="text-gray-600 hover:text-gray-800">
                         <span class="relative">
@@ -31,29 +47,38 @@
             </div>
         </nav>
     </header>
+    
 
     <!-- نوار ناوبری جدید (Navbar پایین‌تر) -->
     <nav class="bg-gray-800 text-white py-4">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center">
-                <!-- دسته‌بندی‌ها -->
-                <div class="flex space-x-8">
-                    <a href="#" class="text-gray-300 hover:text-white">گوشی‌های موبایل</a>
-                    <a href="#" class="text-gray-300 hover:text-white">لپ‌تاپ و کامپیوتر</a>
-                    <a href="#" class="text-gray-300 hover:text-white">لوازم جانبی</a>
-                    <a href="#" class="text-gray-300 hover:text-white">تلویزیون و وسایل صوتی</a>
-                    <a href="#" class="text-gray-300 hover:text-white">دوربین و تجهیزات عکاسی</a>
-                    <a href="#" class="text-gray-300 hover:text-white">گیمینگ</a>
-                </div>
-
-                <!-- جستجو -->
-                <div class="relative">
-                    <input type="text" class="px-4 py-2 rounded-lg w-80 border border-gray-300 focus:outline-none" placeholder="جستجو کنید...">
-                    <button class="absolute left-0 top-0 mt-2 ml-2 text-gray-600 hover:text-gray-800">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18l6-6M10 18a8 8 0 1110-10 8 8 0 010 16z"></path>
+                <!-- منوی موبایل -->
+                <div class="lg:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+                        دسته‌بندی‌ها
+                        <svg class="w-5 h-5 inline-block ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
                     </button>
+                    <div id="mobile-menu" class="hidden flex-col space-y-2 mt-2 bg-gray-700 p-4 rounded-lg">
+                        <a href="#" class="block text-gray-300 hover:text-white">گوشی‌های موبایل</a>
+                        <a href="#" class="block text-gray-300 hover:text-white">لپ‌تاپ و کامپیوتر</a>
+                        <a href="#" class="block text-gray-300 hover:text-white">لوازم جانبی</a>
+                        <a href="#" class="block text-gray-300 hover:text-white">تلویزیون و وسایل صوتی</a>
+                        <a href="#" class="block text-gray-300 hover:text-white">دوربین و تجهیزات عکاسی</a>
+                        <a href="#" class="block text-gray-300 hover:text-white">گیمینگ</a>
+                    </div>
+                </div>
+    
+                <!-- منوی دسکتاپ -->
+                <div class="hidden lg:flex justify-center w-full space-x-8 space-x-reverse">
+                    <a href="#" class="text-gray-300 hover:text-white text-sm">گوشی‌های موبایل</a>
+                    <a href="#" class="text-gray-300 hover:text-white text-sm">لپ‌تاپ و کامپیوتر</a>
+                    <a href="#" class="text-gray-300 hover:text-white text-sm">لوازم جانبی</a>
+                    <a href="#" class="text-gray-300 hover:text-white text-sm">تلویزیون و وسایل صوتی</a>
+                    <a href="#" class="text-gray-300 hover:text-white text-sm">دوربین و تجهیزات عکاسی</a>
+                    <a href="#" class="text-gray-300 hover:text-white text-sm">گیمینگ</a>
                 </div>
             </div>
         </div>
@@ -64,77 +89,6 @@
         <h1 class="text-3xl font-bold mb-6">محصولات ما</h1>
         <!-- Product list -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
-            <!-- Product 1 -->
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                <img src="static/1.jpg" alt="گوشی موبایل" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h2 class="text-xl font-semibold text-gray-800">گوشی موبایل سامسونگ</h2>
-                    <p class="text-gray-600">گوشی موبایل سامسونگ با ویژگی‌های برجسته و صفحه نمایش OLED.</p>
-                    <p class="text-lg font-bold text-gray-900 mt-2">۳۰۰,۰۰۰ تومان</p>
-                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
-                </div>
-            </div>
-            <!-- Product 2 -->
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                <img src="static/1.jpg" alt="لپ‌تاپ اچ‌پی" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h2 class="text-xl font-semibold text-gray-800">لپ‌تاپ اچ‌پی</h2>
-                    <p class="text-gray-600">لپ‌تاپ HP با پردازنده Intel و حافظه ۸ گیگابایت.</p>
-                    <p class="text-lg font-bold text-gray-900 mt-2">۶,۰۰۰,۰۰۰ تومان</p>
-                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
-                </div>
-            </div>
-            <!-- Product 3 -->
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                <img src="static/1.jpg" alt="دوربین کانن" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h2 class="text-xl font-semibold text-gray-800">دوربین کانن</h2>
-                    <p class="text-gray-600">دوربین دیجیتال کانن با رزولوشن ۲۴ مگاپیکسل.</p>
-                    <p class="text-lg font-bold text-gray-900 mt-2">۸,۵۰۰,۰۰۰ تومان</p>
-                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
-                </div>
-            </div>
-            <!-- Product 4 -->
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                <img src="static/1.jpg" alt="گوشی شیائومی" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h2 class="text-xl font-semibold text-gray-800">گوشی شیائومی</h2>
-                    <p class="text-gray-600">گوشی هوشمند شیائومی با پردازنده Snapdragon و دوربین ۱۰۸ مگاپیکسل.</p>
-                    <p class="text-lg font-bold text-gray-900 mt-2">۴,۲۰۰,۰۰۰ تومان</p>
-                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
-                </div>
-            </div>
-            <!-- Product 5 -->
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                <img src="static/1.jpg" alt="تلویزیون ال‌جی" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h2 class="text-xl font-semibold text-gray-800">تلویزیون ال‌جی</h2>
-                    <p class="text-gray-600">تلویزیون ۴K ال‌جی با تکنولوژی OLED.</p>
-                    <p class="text-lg font-bold text-gray-900 mt-2">۱۵,۰۰۰,۰۰۰ تومان</p>
-                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
-                </div>
-            </div>
-            <!-- Product 6 -->
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                <img src="static/1.jpg" alt="ساعت هوشمند اپل" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h2 class="text-xl font-semibold text-gray-800">ساعت هوشمند اپل</h2>
-                    <p class="text-gray-600">ساعت هوشمند اپل با ویژگی‌های سلامت و ورزش.</p>
-                    <p class="text-lg font-bold text-gray-900 mt-2">۵,۰۰۰,۰۰۰ تومان</p>
-                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
-                </div>
-            </div>
-            <!-- Add remaining products 7-12 -->
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                <img src="static/1.jpg" alt="محصول 7" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h2 class="text-xl font-semibold text-gray-800">محصول 7</h2>
-                    <p class="text-gray-600">توضیحات محصول 7</p>
-                    <p class="text-lg font-bold text-gray-900 mt-2">قیمت ۷</p>
-                    <button class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">افزودن به سبد خرید</button>
-                </div>
-            </div>
-            <!-- Add more products up to Product 12 -->
         </div>
     </main>
 
