@@ -17,7 +17,7 @@ class Product(BaseModel):
     brand = models.TextField(max_length=50)
     model = models.TextField(max_length=50)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='products')
-    image = models.ImageField(upload_to='media/products', blank=True, null=True)
+    image = models.URLField(max_length=500, blank=True)
 
     def __str__(self):
         return self.name

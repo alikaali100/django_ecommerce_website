@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تماس با ما | فروشگاه آنلاین</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow">
+        <nav class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="index.html" class="text-xl font-bold">فروشگاه</a>
+                    <a href="products.html" class="text-gray-600 hover:text-gray-800">محصولات</a>
+                    <a href="contact.html" class="text-gray-600 hover:text-gray-800">تماس با ما</a>
+                </div>
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="#" class="text-gray-600 hover:text-gray-800">
+                        <span class="relative">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">0</span>
+                        </span>
+                    </a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">ورود</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">ثبت‌نام</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Contact Form -->
+            <div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-2xl font-bold mb-6">فرم تماس</h2>
+                    <form method="post">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">نام و نام خانوادگی</label>
+                            <input type="text" name="name" required class="w-full border rounded p-2">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">ایمیل</label>
+                            <input type="email" name="email" required class="w-full border rounded p-2">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">موضوع</label>
+                            <input type="text" name="subject" required class="w-full border rounded p-2">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">پیام</label>
+                            <textarea name="message" rows="5" required class="w-full border rounded p-2"></textarea>
+                        </div>
+                        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                            ارسال پیام
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-2xl font-bold mb-6">اطلاعات تماس</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="font-semibold mb-2">آدرس</h3>
+                            <p class="text-gray-600">تهران، خیابان ...</p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2">تلفن</h3>
+                            <p class="text-gray-600">۰۲۱-XXXXXXXX</p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2">ایمیل</h3>
+                            <p class="text-gray-600">info@example.com</p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2">ساعات کاری</h3>
+                            <p class="text-gray-600">شنبه تا چهارشنبه: ۹ صبح تا ۶ عصر</p>
+                            <p class="text-gray-600">پنجشنبه: ۹ صبح تا ۲ بعد از ظهر</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map -->
+                <div class="mt-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h2 class="text-2xl font-bold mb-6">موقعیت ما روی نقشه</h2>
+                        <iframe src="https://www.google.com/maps/embed?pb=your-embed-url" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4">درباره ما</h3>
+                    <p class="text-gray-300">توضیحات مختصر درباره فروشگاه و خدمات آن</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">لینک‌های مفید</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-300 hover:text-white">درباره ما</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">تماس با ما</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">سوالات متداول</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">تماس با ما</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>آدرس: تهران، خیابان ...</li>
+                        <li>تلفن: ۰۲۱-XXXXXXXX</li>
+                        <li>ایمیل: info@example.com</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
