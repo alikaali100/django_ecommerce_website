@@ -18,10 +18,11 @@ class Product(BaseModel):
     model = models.TextField(max_length=50)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='products')
     image = models.URLField(max_length=500, blank=True)
+    discounts = models.ManyToManyField('Discount', blank=True, related_name='products')
 
     def __str__(self):
         return self.name
-
+    
 class ProductFeature(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='features')
     key = models.CharField(max_length=50)

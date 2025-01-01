@@ -1,9 +1,10 @@
+<!-- base.html -->
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <title>فروشگاه موبایل</title>
     <script src="static/script.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -14,9 +15,9 @@
         <nav class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-4 space-x-reverse">
-                    <a href="index.html" class="text-xl font-bold">فروشگاه</a>
-                    <a href="products.html" class="text-gray-600 hover:text-gray-800">محصولات</a>
-                    <a href="contact.html" class="text-gray-600 hover:text-gray-800">تماس با ما</a>
+                    <a href="{% url 'home' %}" class="text-xl font-bold">فروشگاه</a>
+                    <a href="{% url 'products' %}" class="text-gray-600 hover:text-gray-800">محصولات</a>
+                    <a href="{% url 'contact'%}" class="text-gray-600 hover:text-gray-800">تماس با ما</a>
                 </div>
                 <div class="flex items-center space-x-4 space-x-reverse">
                     <a href="cart.html" class="text-gray-600 hover:text-gray-800">
@@ -27,8 +28,8 @@
                             <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">0</span>
                         </span>
                     </a>
-                    <a href="#login" class="text-gray-600 hover:text-gray-800">ورود</a>
-                    <a href="#register" class="text-gray-600 hover:text-gray-800">ثبت‌نام</a>
+                    <a href="{% url 'login' %}" class="text-gray-600 hover:text-gray-800">ورود</a>
+                    <a href="{% url 'register' %}" class="text-gray-600 hover:text-gray-800">ثبت‌نام</a>
                 </div>
             </div>
         </nav>
@@ -36,7 +37,9 @@
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
-        {{ content }}
+        {% block content %}
+
+        {% endblock %}
     </main>
 
     <!-- Footer -->
@@ -50,9 +53,9 @@
                 <div>
                     <h3 class="text-lg font-bold mb-4">لینک‌های مفید</h3>
                     <ul class="space-y-2">
-                        <li><a href="#about" class="text-gray-300 hover:text-white">درباره ما</a></li>
-                        <li><a href="#contact" class="text-gray-300 hover:text-white">تماس با ما</a></li>
-                        <li><a href="#faq" class="text-gray-300 hover:text-white">سوالات متداول</a></li>
+                        <li><a href="{%url 'contact'%}" class="text-gray-300 hover:text-white">درباره ما</a></li>
+                        <li><a href="{%url 'contact'%}" class="text-gray-300 hover:text-white">تماس با ما</a></li>
+                        <li><a href="{%url 'contact'%}" class="text-gray-300 hover:text-white">سوالات متداول</a></li>
                     </ul>
                 </div>
                 <div>

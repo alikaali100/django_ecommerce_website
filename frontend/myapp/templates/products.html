@@ -1,24 +1,24 @@
+{% extends "base.html" %}
 
-<body dir="rtl" class="bg-gray-100">
-    <div class="container mx-auto py-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">لیست محصولات</h1>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {% for product in products %}
-                <div class="bg-white shadow rounded-lg p-4 flex flex-col">
-                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full h-48 object-contain mb-4">
-                    <h2 class="text-xl font-semibold text-gray-800">{{ product.name }}</h2>
-                    <p class="text-gray-600">{{ product.description }}</p>
-                    <p class="text-lg font-bold text-gray-900 mt-2">
-                        {{ product.price }} تومان
-                    </p>
-                    <button class="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg hover:bg-blue-600 text-sm">
-                        افزودن به سبد خرید
-                    </button>
-                </div>
-            {% empty %}
-                <p class="text-gray-500">هیچ محصولی یافت نشد.</p>
-            {% endfor %}
+{% block content %}
+<!-- محتوا و محصولات -->
+<main class="container mx-auto px-4 py-8">
+    <!-- Product list -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
+        {% for product in products %}
+        <div class="p-4 flex flex-col h-full px-0 mx-0">
+            <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full sm:w-48 md:w-64 lg:w-80 h-auto object-contain">
+            <div class="p-4 flex-grow">
+                <h2 class="text-xl font-semibold text-gray-800">{{ product.name }}</h2>
+                <p class="text-gray-600">{{ product.description }}</p>
+                <p class="text-lg font-bold text-gray-900 mt-2">{{ product.price }} تومان</p>
+            </div>
+            <button class="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg hover:bg-blue-600 text-sm">
+                افزودن به سبد خرید
+            </button>
         </div>
+        {% endfor %}
     </div>
-</body>
-</html>
+</main>
+
+{% endblock %}

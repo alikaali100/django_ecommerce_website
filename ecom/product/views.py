@@ -5,7 +5,7 @@ from .models import Product, Category, Discount, ProductFeature
 from .serializers import ProductSerializer, CategorySerializer, DiscountSerializer, ProductFeatureSerializer
 
 class ProductViewSet(ReadOnlyModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.prefetch_related('discounts').select_related('category')
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['category', 'brand']
