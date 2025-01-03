@@ -1,8 +1,9 @@
 from django.db import models
 from core.models import BaseModel
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
-
-class Customer(BaseModel):
+from django.utils.timezone import now, timedelta
+class Customer(AbstractUser):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
@@ -15,6 +16,17 @@ class Customer(BaseModel):
             )
         ]
     )
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+    otp = models.CharField(max_length=6, blank=True, null=True)  # Add OTP field
+    otp_expiry = models.DateTimeField(blank=True, null=True)  # Add OTP expiry field
+
+    def generate_otp(self):
+        """Generate a 6-digit OTP and set an expiry time."""
+        import random
+        self.otp = str(random.randint(100000, 999999))
+        self.otp_expiry = now() + timedelta(minutes=5)  # OTP valid for 5 minutes
+        self.save()
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
