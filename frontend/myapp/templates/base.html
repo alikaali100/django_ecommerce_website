@@ -28,8 +28,16 @@
                             <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">0</span>
                         </span>
                     </a>
-                    <a href="{% url 'login' %}" class="text-gray-600 hover:text-gray-800">ورود</a>
-                    <a href="{% url 'register' %}" class="text-gray-600 hover:text-gray-800">ثبت‌نام</a>
+                    <!-- Authentication Check -->
+                    {% if customer.is_authenticated %}
+                        <!-- Show when the user is logged in -->
+                        <a href="{% url 'user_panel' %}" class="text-gray-600 hover:text-gray-800">پنل کاربری</a>
+                        <a href="{% url 'logout' %}" class="text-gray-600 hover:text-gray-800">خروج</a>
+                    {% else %}
+                        <!-- Show when the user is not logged in -->
+                        <a href="{% url 'login' %}" class="text-gray-600 hover:text-gray-800">ورود</a>
+                        <a href="{% url 'register' %}" class="text-gray-600 hover:text-gray-800">ثبت‌نام</a>
+                    {% endif %}
                 </div>
             </div>
         </nav>

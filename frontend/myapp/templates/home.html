@@ -70,6 +70,9 @@
                     </div>
                 </div>
             {% endfor %}
+            <p>Authenticated: {{ user.is_authenticated }}</p>
+<p>Username: {{ user.username }}</p>
+<p>Phone: {{ user.phone_number }}</p>
         </div>
     </section>
 {% endblock %}
