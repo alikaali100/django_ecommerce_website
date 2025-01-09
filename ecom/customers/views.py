@@ -102,16 +102,10 @@ class ValidateOTPView(APIView):
                 return Response({"error": "Customer with this email not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def post(self, request):
-        try:
-            refresh_token = request.data.get('refresh_token')
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        response = Response({"message": "Successfully logged out."}, status=200)
+        response.delete_cookie("access_token")  # حذف کوکی access_token
+        return response
         
 class UserProfileView(APIView):
     authentication_classes = [JWTAuthentication]

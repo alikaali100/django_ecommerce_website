@@ -72,3 +72,32 @@ def login_view(request):
             return render(request, "login.html", context)
     return render(request, "login.html")
 
+from django.http import HttpResponse
+
+def logout_view(request):
+    try:
+        response = requests.post(
+            f"{API_BASE_URL}/api/customers/logout/",
+            cookies=request.COOKIES,  # ارسال کوکی‌ها برای احراز هویت
+        )
+        if response.status_code == 200:
+            return render(request, "login.html")
+        else:
+            # Handle unsuccessful logout response
+            return HttpResponse("Logout failed. Please try again.", status=400)
+    except Exception as e:
+        # Handle network error
+        print(f"Logout Error: {e}")
+        return HttpResponse("An error occurred while logging out. Please try again later.", status=500)
+# def logout_view(request):
+#     try:
+#         response = requests.post(
+#             f"{API_BASE_URL}/api/customers/logout/",
+#             cookies=request.COOKIES,  # ارسال کوکی‌ها برای احراز هویت
+#         )
+#         if response.status_code == 200:
+#             return render(request, "login.html")
+        
+#     except Exception as e:
+#         # مدیریت خطای شبکه
+#         print(f"Logout Error: {e}")

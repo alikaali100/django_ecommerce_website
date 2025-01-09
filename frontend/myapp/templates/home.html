@@ -70,15 +70,5 @@
                     </div>
                 </div>
             {% endfor %}
-            <p>Authenticated: {{ user.is_authenticated }}</p>
-<p>Username: {{ user.username }}</p>
-<p>Phone: {{ user.phone_number }}</p>
-        </div>
-        {% if user_info %}
-    <p>Welcome, {{ user_info.username }}!</p>
-    <p>Your email is: {{ user_info.email }}</p>
-{% else %}
-    <p>Please log in to view your profile.</p>
-{% endif %}
     </section>
 {% endblock %}

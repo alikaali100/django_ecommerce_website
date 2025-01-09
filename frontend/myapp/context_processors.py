@@ -3,15 +3,17 @@ from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 
 def user_info_processor(request):
-    # if not request.user or isinstance(request.user, AnonymousUser):
-    #     return {'user_info': None}
+    # بررسی وجود کوکی access_token
+    access_token = request.COOKIES.get('access_token')
     
-    access_token = request.COOKIES['access_token']
-
+    # اگر کوکی وجود نداشت، بررسی کنید که کاربر ناشناس است یا خیر
     if not access_token:
+        if not request.user or isinstance(request.user, AnonymousUser):
+            return {'user_info': None}
+        # اگر کاربر ناشناس نیست ولی کوکی هم وجود ندارد
         return {'user_info': None}
-
-    # آدرس API که اطلاعات کاربر را دریافت می‌کند
+    
+    # اگر کوکی وجود داشت، درخواست به API ارسال شود
     user_info_url = f"{settings.BACKEND_URL}/api/customers/me/"
     headers = {'Authorization': f'Bearer {access_token}'}
     
