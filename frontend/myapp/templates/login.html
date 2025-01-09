@@ -26,14 +26,13 @@
             <p id="error-message" class="mt-4 text-center text-red-500 hidden"></p>
         </div>
     </main>
-
     <script>
         document.getElementById('login-button').addEventListener('click', async function (event) {
             event.preventDefault();
-
+    
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-
+    
             try {
                 const response = await fetch('http://127.0.0.1:8000/api/customers/login/', {
                     method: 'POST',
@@ -43,12 +42,12 @@
                     },
                     body: JSON.stringify({ email, password })
                 });
-
+    
                 if (response.ok) {
                     const data = await response.json();
                     // Set the access token as a cookie
-                    document.cookie = `access_token=${data.refresh}; Path=/;`;
-
+                    document.cookie = `access_token=${data.access}; Path=/;`;
+    
                     // Redirect to the home page
                     window.location.href = 'http://127.0.0.1:8080/home/';
                 } else {
@@ -63,4 +62,5 @@
             }
         });
     </script>
+    
 {% endblock %}

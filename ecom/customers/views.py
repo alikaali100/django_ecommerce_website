@@ -11,8 +11,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import IsAuthenticated
 from django.utils.http import http_date
 from datetime import timedelta,datetime
-
-from django.http import HttpResponse
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class RegisterView(APIView):
@@ -42,13 +41,15 @@ class LoginView(APIView):
 
             # Create a response and set the cookie
             response = Response({
-                "refresh": str(refresh),
+                "access": access_token,  # Include access token in response
             }, status=200)
             response.set_cookie(
                 key="access_token",
                 value=access_token,
-                max_age=3600,
+                httponly=True,  # Ensure cookie cannot be accessed via JavaScript
+                max_age=3600,  # Cookie expiration in seconds
                 samesite='Lax',
+                secure=True,  # Use only with HTTPS in production
             )
             return response
         
@@ -112,3 +113,12 @@ class LogoutView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+class UserProfileView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            "username": user.username,
+        })
