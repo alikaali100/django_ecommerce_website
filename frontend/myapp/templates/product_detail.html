@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Product Image -->
+        <div>
+            <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full rounded-lg">
+        </div>
+
+        <!-- Product Details -->
+        <div>
+            <h1 class="text-2xl font-bold mb-4">{{ product.name }}</h1>
+            <p class="text-gray-600 mb-4">{{ product.description }}</p>
+            <div class="text-lg font-semibold text-gray-800 mb-4 convert-to-persian">قیمت: {{ product.price}} تومان</div>
+
+            <!-- Quantity Selector -->
+            <div class="mb-4">
+                <label for="quantity" class="block text-sm font-medium text-gray-700">تعداد</label>
+                <input id="quantity" name="quantity" type="number" min="1" value="1" class="mt-1 block w-20 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+
+            <!-- Add to Cart Button -->
+            <button id="add-to-cart" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none">افزودن به سبد خرید</button>
+
+            <!-- Success Message -->
+            <p id="success-message" class="text-green-600 mt-4 hidden">محصول به سبد خرید اضافه شد!</p>
+        </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="mt-8">
+        <h2 class="text-xl font-bold mb-4 text-right">ویژگی‌های محصول</h2>
+        {% if product.features %}
+            <table class="w-full text-sm text-left text-gray-600 border-collapse border border-gray-300 shadow-lg rounded-lg overflow-hidden  text-right">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="border border-gray-300 px-6 py-3 font-medium text-gray-700">ویژگی</th>
+                        <th class="border border-gray-300 px-6 py-3 font-medium text-gray-700">مشخصات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for feature in product.features %}
+                        <tr class="hover:bg-gray-100 transition duration-200">
+                            <td class="border border-gray-300 px-6 py-3 text-gray-800">{{ feature.key }}</td>
+                            <td class="border border-gray-300 px-6 py-3 text-gray-800">{{ feature.value }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-gray-600 mt-4 text-center bg-gray-50 p-4 rounded-lg shadow-sm">هیچ ویژگی‌ای برای این محصول ثبت نشده است.</p>
+        {% endif %}
+    </div>
+    
+    
+    <!-- Reviews Section -->
+    <div class="mt-8">
+        <h2 class="text-xl font-bold mb-4">نظرات کاربران</h2>
+        <div class="space-y-6">
+                <p class="text-gray-600">هنوز نظری ثبت نشده است.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#add-to-cart').click(function() {
+            // Mock adding to cart
+            $('#success-message').removeClass('hidden');
+            setTimeout(() => {
+                $('#success-message').addClass('hidden');
+            }, 3000);
+        });
+    });
+</script>
+{% endblock %}

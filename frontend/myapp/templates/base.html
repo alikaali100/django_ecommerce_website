@@ -9,6 +9,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body class="bg-gray-50">
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+            
+            // تابع برای تبدیل اعداد انگلیسی به فارسی
+            function convertToPersianDigits(input) {
+                return input.toString().replace(/\d/g, (digit) => persianDigits[digit]);
+            }
+    
+            // تبدیل مقادیر خاص در صفحه به اعداد فارسی
+            document.querySelectorAll(".convert-to-persian").forEach((element) => {
+                element.textContent = convertToPersianDigits(element.textContent);
+            });
+        });
+    </script>
     <!-- Header -->
     <header class="bg-white shadow">
         <nav class="container mx-auto px-4 py-3">

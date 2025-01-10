@@ -116,3 +116,4 @@ class UserProfileView(APIView):
         return Response({
             "username": user.username,
         })
+    

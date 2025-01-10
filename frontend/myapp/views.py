@@ -95,3 +95,31 @@ def logout_view(request):
         # Handle network error
         print(f"Logout Error: {e}")
         return HttpResponse("An error occurred while logging out. Please try again later.", status=500)
+
+from django.http import Http404
+def product_detail_view(request, product_id):
+    # API URLs
+    product_api_url = f"http://localhost:8000/api/products/{product_id}/"
+    features_api_url = f"http://localhost:8000/api/product-features/"
+
+    try:
+        # Fetch product details
+        product_response = requests.get(product_api_url)
+        product_response.raise_for_status()
+        product = product_response.json()
+
+        # Fetch all features
+        features_response = requests.get(features_api_url)
+        features_response.raise_for_status()
+        all_features = features_response.json()
+
+        # Filter features for the current product
+        product_features = [feature for feature in all_features if feature['product'] == product_id]
+
+        # Add features to product dictionary
+        product['features'] = product_features
+
+    except requests.exceptions.RequestException:
+        raise Http404("Product or features not found")
+
+    return render(request, 'product_detail.html', {'product': product})
