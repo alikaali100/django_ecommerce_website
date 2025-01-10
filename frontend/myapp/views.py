@@ -76,12 +76,18 @@ from django.http import HttpResponse
 
 def logout_view(request):
     try:
+        # ارسال درخواست logout به API
         response = requests.post(
             f"{API_BASE_URL}/api/customers/logout/",
             cookies=request.COOKIES,  # ارسال کوکی‌ها برای احراز هویت
         )
+        
         if response.status_code == 200:
-            return render(request, "login.html")
+            # پاک کردن کوکی‌ها در سمت کلاینت
+            logout_response = redirect("login")  # ریدایرکت به صفحه لاگین
+            logout_response.delete_cookie("access_token")  # پاک کردن کوکی access_token
+            # در صورت نیاز کوکی‌های دیگر را نیز اینجا پاک کنید
+            return logout_response
         else:
             # Handle unsuccessful logout response
             return HttpResponse("Logout failed. Please try again.", status=400)
