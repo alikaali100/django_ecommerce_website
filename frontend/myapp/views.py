@@ -95,15 +95,3 @@ def logout_view(request):
         # Handle network error
         print(f"Logout Error: {e}")
         return HttpResponse("An error occurred while logging out. Please try again later.", status=500)
-# def logout_view(request):
-#     try:
-#         response = requests.post(
-#             f"{API_BASE_URL}/api/customers/logout/",
-#             cookies=request.COOKIES,  # ارسال کوکی‌ها برای احراز هویت
-#         )
-#         if response.status_code == 200:
-#             return render(request, "login.html")
-        
-#     except Exception as e:
-#         # مدیریت خطای شبکه
-#         print(f"Logout Error: {e}")
