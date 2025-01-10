@@ -14,61 +14,74 @@
         </div>
     </div>
 
-    <!-- Featured Products -->
-    <section class="mb-12">
-        <h2 class="text-2xl font-bold mb-6">محصولات ویژه</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <section class="mb-12 bg-red-500 rounded-lg p-6">
+        <h2 class="text-2xl font-bold mb-6 text-white text-center">محصولات ویژه</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
             {% for product in products %}
-                {% if product.has_discount %}
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="text-lg font-semibold mb-2">{{ product.name }}</h3>
-                            <div class="flex justify-between items-center mb-4">
-                                <span class="text-gray-600">{{ product.price }} تومان</span>
-                                {% for discount in product.discounts.all %}
-                                    {% if discount.is_active %}
-                                        <span class="bg-red-500 text-white px-2 py-1 rounded-full text-sm">
-                                            {{ discount.get_type_display }}: 
-                                            {% if discount.type == 'PG' %}
-                                                {{ discount.amount }}% 
-                                            {% elif discount.type == 'FA' %}
-                                                {{ discount.amount }} تومان
-                                            {% endif %}
-                                        </span>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                            <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">خرید</button>
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </section>
-    
-    
-
-    <!-- Discounted Products -->
-    <section class="mb-12">
-        <h2 class="text-2xl font-bold mb-6">تخفیف‌های ویژه</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {% for product in discounted_products %}
                 <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
+                    <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full sm:w-48 md:w-64 lg:w-80 h-auto object-contain">
                     <div class="p-4">
                         <h3 class="text-lg font-semibold mb-2">{{ product.name }}</h3>
                         <div class="flex justify-between items-center mb-4">
-                            <span class="text-gray-600">{{ product.price }} تومان</span>
-                            {% if product.discount %}
-                                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-sm">
-                                    {{ product.discount }}% تخفیف
-                                </span>
-                            {% endif %}
+                            <span class="text-gray-600 line-through">{{ product.price }} تومان</span>
+                            <span class="text-green-600 font-bold">{{ product.discounted_price }} تومان</span>
                         </div>
                         <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">خرید</button>
                     </div>
                 </div>
             {% endfor %}
+        </div>    
     </section>
+    
+    <section class="mb-12 bg-blue-100 rounded-lg p-6">
+        <h2 class="text-2xl font-bold mb-6 text-center">چرا خرید از ما؟</h2>
+        <ul class="list-disc list-inside text-gray-700 space-y-4">
+            <li class="flex items-center">
+                <span class="bg-blue-500 text-white rounded-full p-2 mr-3">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </span>
+                ارسال رایگان برای خریدهای بالای 500 هزار تومان     
+            </li>
+            <li class="flex items-center">
+                <span class="bg-blue-500 text-white rounded-full p-2 mr-3">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </span>
+                پشتیبانی 24/7 برای مشتریان
+            </li>
+            <li class="flex items-center">
+                <span class="bg-blue-500 text-white rounded-full p-2 mr-3">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </span>
+                گارانتی بازگشت وجه در صورت نارضایتی
+            </li>
+            <li class="flex items-center">
+                <span class="bg-blue-500 text-white rounded-full p-2 mr-3">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </span>
+                تخفیف‌های ویژه و پیشنهادات روزانه
+            </li>
+        </ul>
+        
+    </section>
+    <section class="mb-12 bg-gray-800 text-white rounded-lg p-6">
+        <h2 class="text-2xl font-bold mb-6 text-center">عضویت در خبرنامه</h2>
+        <p class="text-center mb-4">با عضویت در خبرنامه، از جدیدترین تخفیف‌ها و محصولات مطلع شوید!</p>
+        <form class="flex justify-center">
+            <input type="email" placeholder="ایمیل خود را وارد کنید" 
+                   class="p-2 rounded-l-lg w-2/3 md:w-1/2 focus:outline-none">
+            <button type="submit" class="bg-blue-600 px-4 py-2 rounded-r-lg hover:bg-blue-700">
+                ارسال
+            </button>
+        </form>
+    </section>
+    
+    
 {% endblock %}

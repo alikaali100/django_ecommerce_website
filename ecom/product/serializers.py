@@ -9,12 +9,7 @@ class DiscountSerializer(serializers.ModelSerializer):
 
 class ProductSerializer (serializers.ModelSerializer):
     discounts = DiscountSerializer(many=True)
-    # has_discount = serializers.SerializerMethodField()
-    # def get_has_discount(self, obj):
-    #     now = timezone.now()
-    #     return obj.discounts.filter(
-    #         start_date__lte=now, end_date__gte=now, is_active=True
-    #     ).exists()
+    discounted_price = serializers.ReadOnlyField()
     class Meta:
         model = Product
         fields = '__all__'

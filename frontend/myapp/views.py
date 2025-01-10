@@ -16,7 +16,7 @@ def products_view(request):
 
 def home_view(request):
     try:
-        response = requests.get('http://localhost:8000/api/products/')
+        response = requests.get('http://localhost:8000/api/products/discounted/')
         if response.status_code == 200:
             data = response.json()  
         else:
