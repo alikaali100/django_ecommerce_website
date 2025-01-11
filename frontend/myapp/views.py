@@ -1,18 +1,32 @@
 from django.shortcuts import render, redirect
 import requests
+from django.http import JsonResponse
 
 def products_view(request):
     try:
+        # دریافت محصولات
         response = requests.get('http://localhost:8000/api/products/')
         if response.status_code == 200:
-            data = response.json()  
+            products = response.json()
         else:
-            data = []
+            products = []
+        
+        # دریافت دسته‌بندی‌ها
+        category_response = requests.get('http://127.0.0.1:8000/api/categories/')
+        if category_response.status_code == 200:
+            categories = category_response.json()
+        else:
+            categories = []
     except requests.exceptions.RequestException as e:
-        data = []  
-        print(f"Error fetching products: {e}")
+        products = []
+        categories = []
+        print(f"Error fetching data: {e}")
 
-    return render(request, 'products.html', {'products': data})
+    return render(request, 'products.html', {
+        'products': products,
+        'categories': categories
+    })
+
 
 def home_view(request):
     try:
@@ -123,3 +137,17 @@ def product_detail_view(request, product_id):
         raise Http404("Product or features not found")
 
     return render(request, 'product_detail.html', {'product': product})
+
+def search_products_view(request):
+    query = request.GET.get('q', '')  
+    try:
+        response = requests.get(f'http://localhost:8000/api/products/?search={query}')
+        if response.status_code == 200:
+            products = response.json()
+        else:
+            products = []
+    except requests.exceptions.RequestException as e:
+        products = []
+        print(f"Error fetching search results: {e}")
+
+    return render(request, 'products.html', {'products': products})

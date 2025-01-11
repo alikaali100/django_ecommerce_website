@@ -16,12 +16,15 @@ class ProductSerializer (serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    products = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    subcategories = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'description', 'products']
+        fields = ['id', 'name', 'description', 'subcategories']
 
+    def get_subcategories(self, obj):
+        subcategories = obj.subcategories.all()
+        return CategorySerializer(subcategories, many=True).data
 
 class ProductFeatureSerializer(serializers.ModelSerializer):
     class Meta:

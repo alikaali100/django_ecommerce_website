@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">{{ category.name }}</h1>
+    <p class="text-gray-600 mb-6">{{ category.description }}</p>
+    
+    <!-- لیست محصولات -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
+        {% for product in products %}
+        <div class="p-4 flex flex-col h-full px-0 mx-0">
+            <a href="{% url 'product_detail' product.id %}" class="block">
+                <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full sm:w-48 md:w-64 lg:w-80 h-auto object-contain">
+            </a>
+            <div class="p-4 flex-grow">
+                <a href="{% url 'product_detail' product.id %}" class="text-xl font-semibold text-gray-800 hover:text-blue-500">
+                    {{ product.name }}
+                </a>
+                <p class="text-gray-600">{{ product.description }}</p>
+                <p class="text-lg font-bold text-gray-900 mt-2">{{ product.price }} تومان</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}

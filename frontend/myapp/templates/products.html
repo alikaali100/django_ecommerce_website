@@ -1,9 +1,61 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- نوار ناوبری -->
+<nav class="bg-gray-800 text-white px-4 py-4 rtl">
+    <div class="container mx-auto flex justify-between items-center">
+        <!-- لوگو -->
+        <a href="{% url 'home' %}" class="text-xl font-bold">فروشگاه</a>
+
+        <!-- منوی دسته‌بندی‌ها -->
+        <ul class="flex space-x-4 space-x-reverse">
+            {% for category in categories %}
+            <li class="relative group">
+                <!-- دسته‌بندی اصلی -->
+                <button 
+                    class="hover:text-blue-400 category-btn" 
+                    data-category-id="{{ category.id }}">
+                    {{ category.name }}
+                </button>
+                <!-- زیرمجموعه‌ها -->
+                {% if category.subcategories %}
+                <ul class="absolute hidden group-hover:block bg-white text-gray-800 mt-2 rounded-lg shadow-lg transition duration-300">
+                    {% for subcategory in category.subcategories %}
+                    <li>
+                        <button 
+                            class="block px-4 py-2 hover:bg-gray-200 category-btn" 
+                            data-category-id="{{ subcategory.id }}">
+                            {{ subcategory.name }}
+                        </button>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+
+        <!-- فیلد جستجو -->
+        <form method="GET" action="{% url 'search_products' %}" class="flex items-center">
+            <input 
+                type="text" 
+                name="q" 
+                class="w-64 px-4 py-2 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                placeholder="جستجوی محصولات..."
+            >
+            <button 
+                type="submit" 
+                class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                جستجو
+            </button>
+        </form>
+    </div>
+</nav>
+
+<!-- محتوای اصلی -->
 <main class="container mx-auto px-4 py-8">
-    <!-- Product list -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
+    <!-- محصولات -->
+    <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
         {% for product in products %}
         <div class="p-4 flex flex-col h-full px-0 mx-0">
             <a href="{% url 'product_detail' product.id %}" class="block">
@@ -23,4 +75,50 @@
         {% endfor %}
     </div>
 </main>
+
+<!-- اسکریپت برای بارگذاری پویا -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.category-btn');
+        const productsContainer = document.getElementById('products-container');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                const categoryId = this.getAttribute('data-category-id');
+                
+                // درخواست به API
+                fetch(`http://localhost:8000/api/categories/${categoryId}/products/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // پاک کردن محصولات فعلی
+                        productsContainer.innerHTML = '';
+
+                        // افزودن محصولات جدید
+                        data.forEach(product => {
+                            const productHTML = `
+                                <div class="p-4 flex flex-col h-full px-0 mx-0">
+                                    <a href="/product/${product.id}" class="block">
+                                        <img src="${product.image}" alt="${product.name}" class="w-full sm:w-48 md:w-64 lg:w-80 h-auto object-contain">
+                                    </a>
+                                    <div class="p-4 flex-grow">
+                                        <a href="/product/${product.id}" class="text-xl font-semibold text-gray-800 hover:text-blue-500">
+                                            ${product.name}
+                                        </a>
+                                        <p class="text-gray-600">${product.description}</p>
+                                        <p class="text-lg font-bold text-gray-900 mt-2">${product.price} تومان</p>
+                                    </div>
+                                    <button class="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg hover:bg-blue-600 text-sm">
+                                        افزودن به سبد خرید
+                                    </button>
+                                </div>
+                            `;
+                            productsContainer.innerHTML += productHTML;
+                        });
+                    })
+                    .catch(error => console.error('خطا در دریافت محصولات:', error));
+            });
+        });
+    });
+
+</script>
 {% endblock %}
