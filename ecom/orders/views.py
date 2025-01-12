@@ -4,7 +4,7 @@ from rest_framework import status
 from .models import Cart, CartItem, Order, DiscountCode, OrderItem
 from product.models import Product
 from customers.models import Customer, Address
-from .serializers import CartItemSerializer
+from .serializers import CartItemSerializer, OrderSerializer
 from django.utils import timezone
 
 class AddToCartAPIView(APIView):
@@ -297,3 +297,24 @@ class CheckoutAPIView(APIView):
             {"detail": f"Order {order.id} placed successfully. Total amount: {final_amount}."},
             status=status.HTTP_200_OK,
         )
+
+class OrderListAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response(
+                {"detail": "Please log in to view your orders."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        customer = request.user  
+
+        orders = Order.objects.filter(customer=customer).order_by('-created_at')
+
+        if not orders.exists():
+            return Response(
+                {"detail": "You have no orders."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
