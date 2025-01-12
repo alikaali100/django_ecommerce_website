@@ -1,6 +1,6 @@
 from django.urls import path
-from django.views.generic import TemplateView
+from .views import AddToCartAPIView
 
 urlpatterns = [
-    path('checkout/', TemplateView.as_view(template_name='checkout.html'), name='order-checkout'),
+    path('add/', AddToCartAPIView.as_view(), name='add-to-cart'),
 ]
