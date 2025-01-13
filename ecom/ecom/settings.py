@@ -163,8 +163,14 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AUTH_USER_MODEL = 'customers.Customer'
 
 #EMAIL
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+# تنظیمات SMTP
+EMAIL_HOST = 'smtp.gmail.com'  
+EMAIL_PORT = 587  
+EMAIL_USE_TLS = True  
+EMAIL_HOST_USER = 'alikaali1990@gmail.com' 
+EMAIL_HOST_PASSWORD = 'gucj vrzw oasc mtmr' 
 #JWT
 
 SIMPLE_JWT = {

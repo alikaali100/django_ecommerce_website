@@ -71,7 +71,7 @@ class SendOTPView(APIView):
                 send_mail(
                     subject="Your OTP Code",
                     message=f"Your OTP code is {customer.otp}. It is valid for 5 minutes.",
-                    from_email="noreply@example.com",
+                    from_email="alikaali1990@gmail.com",
                     recipient_list=[customer.email],
                 )
 
