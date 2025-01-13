@@ -92,10 +92,18 @@ class ValidateOTPView(APIView):
             try:
                 customer = Customer.objects.get(email=email)
                 if customer.otp == otp and now() < customer.otp_expiry:
-                    customer.otp = None  # Clear OTP after successful validation
+                    customer.otp = None
                     customer.otp_expiry = None
                     customer.save()
-                    return Response({"message": "OTP validated successfully."}, status=status.HTTP_200_OK)
+
+                    refresh = RefreshToken.for_user(customer)  
+                    access_token = str(refresh.access_token)
+
+                    return Response({
+                        "message": "OTP validated successfully.",
+                        "access": access_token,
+                        "refresh": str(refresh)
+                    }, status=status.HTTP_200_OK)
                 else:
                     return Response({"error": "Invalid or expired OTP."}, status=status.HTTP_400_BAD_REQUEST)
             except Customer.DoesNotExist:

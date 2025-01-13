@@ -9,7 +9,7 @@
                     <label for="email" class="block text-gray-700">ایمیل</label>
                     <input type="email" id="email" name="email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="example@example.com" required>
                 </div>
-                <div>
+                <div id="password-fields">
                     <label for="password" class="block text-gray-700">رمز عبور</label>
                     <input type="password" id="password" name="password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="رمز عبور خود را وارد کنید" required>
                 </div>
@@ -22,8 +22,24 @@
                 </div>
                 <button type="button" id="login-button" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">ورود</button>
             </form>
-            <p class="mt-4 text-center text-gray-600">حساب کاربری ندارید؟ <a href="/register/" class="text-blue-500 hover:underline">ثبت‌نام کنید</a></p>
-            <p id="error-message" class="mt-4 text-center text-red-500 hidden"></p>
+            
+            <!-- دکمه ورود با OTP -->
+            <div class="mt-4 text-center">
+                <button type="button" id="otp-button" class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600">ورود با OTP</button>
+            </div>
+            
+            <!-- فرم ورود با OTP -->
+            <div id="otp-form" class="mt-6 hidden">
+                <form class="space-y-4">
+                    <div>
+                        <label for="otp-code" class="block text-gray-700">کد OTP</label>
+                        <input type="text" id="otp-code" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="کد ارسال شده به ایمیل را وارد کنید" required>
+                    </div>
+                    <button type="button" id="validate-otp-button" class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600">تایید کد</button>
+                </form>
+            </div>
+            
+            <p id="otp-error-message" class="mt-4 text-center text-red-500 hidden"></p>
         </div>
     </main>
     <script>
@@ -61,6 +77,66 @@
                 document.getElementById('error-message').classList.remove('hidden');
             }
         });
+        document.getElementById('otp-button').addEventListener('click', async function () {
+        const email = document.getElementById('email').value;
+        if (!email) {
+            alert('لطفاً ابتدا ایمیل خود را وارد کنید.');
+            return;
+        }
+
+        // ارسال درخواست برای دریافت OTP
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/customers/send_otp/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ email })
+            });
+
+            if (response.ok) {
+                alert('کد OTP به ایمیل شما ارسال شد.');
+                document.getElementById('otp-form').classList.remove('hidden');
+            } else {
+                const errorData = await response.json();
+                alert(errorData.error || 'خطا در ارسال کد OTP');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('مشکلی رخ داده است. لطفاً دوباره امتحان کنید.');
+        }
+    });
+
+    document.getElementById('validate-otp-button').addEventListener('click', async function () {
+        const email = document.getElementById('email').value;
+        const otp = document.getElementById('otp-code').value;
+
+        // ارسال درخواست برای تایید OTP
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/customers/validate_otp/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ email, otp })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.cookie = `access_token=${data.access}; Path=/;`;
+                window.location.href = '/home/';
+            } else {
+                const errorData = await response.json();
+                document.getElementById('otp-error-message').innerText = errorData.error || 'کد OTP معتبر نیست.';
+                document.getElementById('otp-error-message').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('مشکلی رخ داده است. لطفاً دوباره امتحان کنید.');
+        }
+    });
     </script>
      
 {% endblock %}
