@@ -26,7 +26,11 @@
                             <span class="text-gray-600 line-through convert-to-persian">{{ product.price }} تومان</span>
                             <span class="text-green-600 font-bold">{{ product.discounted_price }} تومان</span>
                         </div>
-                        <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">خرید</button>
+                        <button 
+                        class="add-to-cart-btn bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg hover:bg-blue-600 text-sm" 
+                        data-product-id="{{ product.id }}">
+                        افزودن به سبد خرید
+                    </button>
                     </div>
                 </div>
             {% endfor %}
@@ -82,6 +86,74 @@
             </button>
         </form>
     </section>
-    
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const cartButtons = document.querySelectorAll('.add-to-cart-btn');
+
+    cartButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const productId = this.getAttribute('data-product-id');
+            const quantity = 1; // تعداد پیش‌فرض
+            const csrfToken = getCSRFTokenFromCookies();
+            const accessToken = getAccessTokenFromCookies();
+
+            if (!csrfToken || !accessToken) {
+                alert('Token not found. Please try again.');
+                return;
+            }
+
+            // ارسال درخواست POST به API
+            fetch('http://localhost:8000/api/cart/add/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({ product: productId, quantity: quantity }),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('مشکلی در افزودن محصول به سبد خرید وجود دارد.');
+                    }
+                })
+                .then(data => {
+                    alert(data.detail || 'محصول با موفقیت به سبد خرید اضافه شد.');
+                })
+                .catch(error => {
+                    console.error('خطا:', error);
+                    alert('مشکلی رخ داد. لطفاً دوباره تلاش کنید.');
+                });
+        });
+    });
+});
+
+// تابع برای دریافت CSRF Token
+function getCSRFTokenFromCookies() {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+        const [name, value] = cookie.split('=');
+        if (name === 'csrftoken') {
+            return value;
+        }
+    }
+    console.error('CSRF Token not found in cookies.');
+    return null;
+}
+function getAccessTokenFromCookies() {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+        const [name, value] = cookie.split('=');
+        if (name === 'access_token') {
+            return value;
+        }
+    }
+    console.error('Access Token not found in cookies.');
+    return null;
+} 
+</script>
+
     
 {% endblock %}

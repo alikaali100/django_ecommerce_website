@@ -224,3 +224,4 @@ def get_product_details(request, product_id):
             "price": 0,
             "image": ""
         }
+    
