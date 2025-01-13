@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <h1 class="text-2xl font-bold mb-6">پنل کاربری</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- بخش اطلاعات کاربری -->
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h2 class="text-lg font-bold mb-4">اطلاعات پروفایل</h2>
+            <ul class="space-y-2 text-gray-600">
+                <li><strong>نام:</strong> {{ user_info.name }}</li>
+                <li><strong>ایمیل:</strong> {{ user_info.email }}</li>
+                <li><strong>شماره تلفن:</strong> {{ user_info.phone }}</li>
+            </ul>
+            <a href="{% url 'edit_profile' %}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">ویرایش اطلاعات</a>
+        </div>
+
+        <!-- بخش سفارش‌ها -->
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h2 class="text-lg font-bold mb-4">سفارش‌های من</h2>
+            <ul class="space-y-2">
+                {% for order in user_orders %}
+                <li class="border-b pb-2">
+                    <strong>شماره سفارش:</strong> {{ order.id }}<br>
+                    <strong>تاریخ:</strong> <span class="convert-to-persian">{{ order.date }}</span><br>
+                    <strong>مبلغ:</strong> <span class="convert-to-persian">{{ order.total }}</span> تومان
+                </li>
+                {% empty %}
+                <li>شما هنوز سفارشی ثبت نکرده‌اید.</li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'orders' %}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">مشاهده همه سفارش‌ها</a>
+        </div>
+
+        <!-- بخش تنظیمات -->
+        <div class="bg-gray-50 p-4 rounded-lg shadow">
+            <h2 class="text-lg font-bold mb-4">تنظیمات</h2>
+            <ul class="space-y-2">
+                <li><a href="{% url 'change_password' %}" class="text-blue-500 hover:underline">تغییر رمز عبور</a></li>
+                <li><a href="{% url 'notifications' %}" class="text-blue-500 hover:underline">مدیریت اعلان‌ها</a></li>
+                <li><a href="{% url 'delete_account' %}" class="text-red-500 hover:underline">حذف حساب کاربری</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

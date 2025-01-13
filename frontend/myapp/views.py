@@ -151,3 +151,76 @@ def search_products_view(request):
         print(f"Error fetching search results: {e}")
 
     return render(request, 'products.html', {'products': products})
+
+
+def cart_view(request):
+    api_url = 'http://localhost:8000/api/cart/'  # آدرس API شما
+    cart_items = []
+    total_quantity = 0
+    total_price = 0
+
+    # دریافت توکن از کوکی‌ها
+    access_token = request.COOKIES.get('access_token')
+    
+    headers = {}
+    if access_token:
+        headers['Authorization'] = f'Bearer {access_token}'
+
+    try:
+        # ارسال درخواست به API برای دریافت سبد خرید
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+
+        cart_items = data.get("cart_items", [])
+        
+        # محاسبه تعداد و قیمت کل و دریافت اطلاعات محصولات
+        for item in cart_items:
+            product = get_product_details(request, item["product"])  # ارسال request و product_id به تابع
+            item["product"] = product  # افزودن اطلاعات محصول
+            total_quantity += item["quantity"]
+            total_price += item["quantity"] * product["price"]
+
+    except requests.RequestException as e:
+        # مدیریت خطا در صورت بروز مشکل
+        print(f"Error fetching cart data: {e}")
+    
+    context = {
+        "cart_items": cart_items,
+        "total_quantity": total_quantity,
+        "total_price": total_price,
+    }
+    
+    return render(request, 'cart.html', context)
+
+def get_product_details(request, product_id):
+    api_url = f'http://localhost:8000/api/products/{product_id}/'  # آدرس API که اطلاعات محصول را برمی‌گرداند
+
+    # دریافت توکن از کوکی‌ها
+    access_token = request.COOKIES.get('access_token')
+    
+    headers = {}
+    if access_token:
+        headers['Authorization'] = f'Bearer {access_token}'
+
+    try:
+        # ارسال درخواست به API با هدرهای Authorization
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()
+        product_data = response.json()
+
+        # برگرداندن اطلاعات محصول
+        return {
+            "name": product_data.get("name", "نامشخص"),
+            "price": product_data.get("price", 0),
+            "image": product_data.get("image", "")
+        }
+
+    except requests.RequestException as e:
+        # در صورت بروز خطا، می‌توانید یک محصول پیش‌فرض برگردانید
+        print(f"Error fetching product details: {e}")
+        return {
+            "name": "نامشخص",
+            "price": 0,
+            "image": ""
+        }

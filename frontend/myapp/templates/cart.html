@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <h1 class="text-2xl font-bold mb-6">سبد خرید شما</h1>
+
+    {% if cart_items %}
+        <!-- جدول سبد خرید -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto border-collapse text-right">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">تصویر محصول</th>
+                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">نام محصول</th>
+                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">قیمت</th>
+                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">تعداد</th>
+                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-4">
+                            <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="w-16 h-16 object-cover rounded">
+                        </td>
+                        <td class="px-4 py-4 text-sm text-gray-700">{{ item.product.name }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700 convert_to_persian">{{ item.product.price }} تومان</td>
+                        <td class="px-4 py-4 text-sm text-gray-700 convert_to_persian">{{ item.quantity }}</td>
+                        <td class="px-4 py-4 text-right">
+                            <form method="post" action="#" class="inline">
+                                {% csrf_token %}
+                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm">حذف</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- جمع کل -->
+        <div class="mt-6 border-t pt-4">
+            <h2 class="text-xl font-bold">جمع کل</h2>
+            <p class="text-gray-600">تعداد کل: <span class="convert-to-persian">{{ total_quantity }}</span></p>
+            <p class="text-gray-600">قیمت کل: <span class="convert-to-persian">{{ total_price }}</span> تومان</p>
+        </div>
+
+        <!-- دکمه ادامه به پرداخت -->
+        <div class="mt-6">
+            <a href="#" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">ادامه به پرداخت</a>
+        </div>
+    {% else %}
+        <!-- پیام خالی بودن سبد خرید -->
+        <p class="text-gray-600">سبد خرید شما خالی است.</p>
+    {% endif %}
+</div>
+{% endblock %}
