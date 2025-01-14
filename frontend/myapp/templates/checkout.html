@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Right Section: Address and Discount Code -->
+    <div class="bg-white p-6 shadow rounded-lg">
+        <h2 class="text-xl font-bold mb-4">آدرس و کد تخفیف</h2>
+        <form method="POST" class="space-y-4" id="discount-form">
+            {% csrf_token %}
+
+            <!-- Province Field -->
+            <div>
+                <label for="province" class="block text-gray-700">استان:</label>
+                <select id="province" name="province" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500">
+                    <option value="">انتخاب استان</option>
+                    <option value="10">تهران</option>
+                    <!-- سایر گزینه‌ها -->
+                </select>
+            </div>
+
+            <!-- City Field -->
+            <div>
+                <label for="city" class="block text-gray-700">شهر:</label>
+                <select id="city" name="city" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500">
+                    <option value="">انتخاب شهر</option>
+                    <option value="Tehran">تهران</option>
+                    <!-- سایر گزینه‌ها -->
+                </select>
+            </div>
+
+            <!-- Detailed Address Field -->
+            <div>
+                <label for="detailed_address" class="block text-gray-700">آدرس دقیق:</label>
+                <textarea id="detailed_address" name="detailed_address" rows="3" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
+
+
+            <!-- Discount Code Field -->
+            <div>
+                <label for="discount-code" class="block text-gray-700">کد تخفیف:</label>
+                <input type="text" id="discount-code" name="discount_code" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Apply Discount Button -->
+            <button type="button" id="apply-discount" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">اعمال کد تخفیف</button>
+        </form>
+        <div class="mt-6 border-t pt-4">
+            <h2 class="text-xl font-bold">جمع کل</h2>
+            <p class="text-gray-600">قیمت کل: <span class="convert-to-persian">{{ total_price }}</span> تومان</p>
+        </div>
+    </div>
+
+    <!-- Left Section: Payment Method and Pay Button -->
+    <div class="bg-white p-6 shadow rounded-lg">
+        <h2 class="text-xl font-bold mb-4">روش پرداخت</h2>
+        <form action="#" method="POST" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Payment Methods -->
+            <div>
+                <label class="block text-gray-700">انتخاب روش پرداخت:</label>
+                <div class="space-y-2 mt-2">
+                    <div>
+                        <input type="radio" id="online" name="payment_method" value="online" class="mr-2">
+                        <label for="online">پرداخت آنلاین</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="cod" name="payment_method" value="cod" class="mr-2">
+                        <label for="cod">پرداخت در محل</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pay Button -->
+            <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">پرداخت</button>
+        </form>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#apply-discount').on('click', function(e) {
+            e.preventDefault();
+
+            const token = document.cookie.split('; ').find(row => row.startsWith('access_token=')).split('=')[1];
+
+            const payload = {
+                discount_code: $('#discount-code').val(),
+                new_address: {
+                    province: $('#province').val(),
+                    city: $('#city').val(),
+                    detailed_address: $('#detailed_address').val()
+                }
+            };
+
+            $.ajax({
+                url: 'http://localhost:8000/api/cart/checkout/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                success: function(response) {
+                    alert('کد تخفیف اعمال شد!');
+                    // به‌روزرسانی جمع کل در صفحه
+                    $('#total-price').text(response.total_price);
+                },
+                error: function(xhr) {
+                    alert(`خطا: ${xhr.responseJSON.detail || 'مشکلی پیش آمد.'}`);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

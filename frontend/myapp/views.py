@@ -210,3 +210,6 @@ def remove_from_cart_view(request):
         else:
             # خطا: نمایش پیام مناسب
             return redirect('cart', {"error_message": "خطا در حذف محصول."})
+        
+def checkout_view(request):
+    return render(request,'checkout.html')
