@@ -10,25 +10,37 @@
             <table class="min-w-full table-auto border-collapse text-right">
                 <thead>
                     <tr class="bg-gray-100">
-                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">تصویر محصول</th>
                         <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">نام محصول</th>
-                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">قیمت</th>
+                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">قیمت اصلی</th>
+                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">قیمت تخفیف‌خورده</th>
                         <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">تعداد</th>
-                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">عملیات</th>
+                        <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">حذف</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in cart_items %}
                     <tr class="border-b hover:bg-gray-50">
-                        <td class="px-4 py-4">
-                            <img src="{{ item.product.image }}" alt="{{ item.product.name }}" class="w-16 h-16 object-cover rounded">
-                        </td>
-                        <td class="px-4 py-4 text-sm text-gray-700">{{ item.product.name }}</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 convert_to_persian">{{ item.product.price }} تومان</td>
-                        <td class="px-4 py-4 text-sm text-gray-700 convert_to_persian">{{ item.quantity }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700">{{ item.product_name }}</td>
+                        <td class="px-4 py-4 text-sm text-gray-700 convert_to_persian">{{ item.product_price }} تومان</td>
+                        <td class="px-4 py-4 text-sm text-gray-700 convert_to_persian">{{ item.discounted_price }} تومان</td>
                         <td class="px-4 py-4 text-right">
-                            <form method="post" action="#" class="inline">
+                            <div class="mb-4">
+                                <label for="quantity-{{ item.product_id }}" class="block text-sm font-medium text-gray-700">تعداد</label>
+                                <input
+                                    id="quantity-{{ item.product_id }}"
+                                    name="quantity"
+                                    type="number"
+                                    min="1"
+                                    value="{{ item.quantity }}"
+                                    class="mt-1 block w-20 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    onchange="updateQuantity('{{ item.product_id }}', this.value)"
+                                >
+                            </div>
+                        </td>
+                        <td class="px-4 py-4 text-right">
+                            <form method="post" action="{% url 'remove_from_cart' %}" class="inline">
                                 {% csrf_token %}
+                                <input type="hidden" name="product_id" value="{{ item.product_id }}">
                                 <button type="submit" class="text-red-600 hover:text-red-800 text-sm">حذف</button>
                             </form>
                         </td>
@@ -41,7 +53,6 @@
         <!-- جمع کل -->
         <div class="mt-6 border-t pt-4">
             <h2 class="text-xl font-bold">جمع کل</h2>
-            <p class="text-gray-600">تعداد کل: <span class="convert-to-persian">{{ total_quantity }}</span></p>
             <p class="text-gray-600">قیمت کل: <span class="convert-to-persian">{{ total_price }}</span> تومان</p>
         </div>
 
@@ -54,4 +65,46 @@
         <p class="text-gray-600">سبد خرید شما خالی است.</p>
     {% endif %}
 </div>
+<script>
+    async function updateQuantity(productId, quantity) {
+        const url = 'http://localhost:8000/api/cart/update/';
+        const token = getCookie('access_token'); // تابعی برای گرفتن توکن از کوکی
+    
+        const data = {
+            product: productId,
+            quantity: parseInt(quantity, 10)
+        };
+    
+        try {
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                alert('تعداد به‌روزرسانی شد!');
+                window.location.reload();
+            } else {
+                alert('خطایی رخ داد. لطفاً دوباره تلاش کنید.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('خطای شبکه! لطفاً اتصال خود را بررسی کنید.');
+        }
+    }
+    
+    // تابع برای گرفتن کوکی
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+    </script>
+    
 {% endblock %}

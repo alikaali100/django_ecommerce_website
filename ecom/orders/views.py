@@ -44,6 +44,8 @@ class AddToCartAPIView(APIView):
             status=status.HTTP_200_OK,
         )
     
+from django.utils.timezone import now
+
 class CartAPIView(APIView):
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -52,23 +54,52 @@ class CartAPIView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        customer = request.user
         try:
-            cart = Cart.objects.get(customer=customer)
+            cart = Cart.objects.get(customer=request.user)
         except Cart.DoesNotExist:
             return Response(
                 {"detail": "Cart not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # Get all cart items for the user
         cart_items = CartItem.objects.filter(cart=cart)
-        serializer = CartItemSerializer(cart_items, many=True)
+        if not cart_items.exists():
+            return Response(
+                {"detail": "Your cart is empty."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        total_price = 0
+        total_quantity = 0
+
+        cart_data = []
+        for item in cart_items:
+            product = item.product
+            discounted_price = product.discounted_price
+            total_price += discounted_price * item.quantity
+            total_quantity += item.quantity  # جمع‌کردن قیمت محصولات با تخفیف
+
+            cart_data.append({
+                "product_id":product.id,
+                "product_name": product.name,
+                "quantity": item.quantity,
+                "product_price": product.price,
+                "discounted_price": discounted_price,
+            })
+
+        # ذخیره total_price در مدل Cart
+        cart.total_price = total_price
+        cart.save()
 
         return Response(
-            {"cart_items": serializer.data},
+            {
+                "cart_items": cart_data,
+                "total_price": total_price,
+                "total_quantity": total_quantity,
+            },
             status=status.HTTP_200_OK,
         )
+
 
 class RemoveFromCartAPIView(APIView):
     def delete(self, request, *args, **kwargs):
@@ -170,6 +201,8 @@ class UpdateCartItemAPIView(APIView):
             status=status.HTTP_200_OK,
         )
     
+from django.utils import timezone
+
 class CheckoutAPIView(APIView):
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -178,35 +211,29 @@ class CheckoutAPIView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        customer = request.user
-
-        # Retrieve the cart for the user
         try:
-            cart = Cart.objects.get(customer=customer)
+            cart = Cart.objects.get(customer=request.user)
         except Cart.DoesNotExist:
             return Response(
-                {"detail": "No cart found for the user."},
+                {"detail": "Cart not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # Retrieve all items in the cart and calculate total price
-        cart_items = CartItem.objects.filter(cart=cart)
-        if not cart_items.exists():
-            return Response(
-                {"detail": "Your cart is empty."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        total_price = sum([item.product.price * item.quantity for item in cart_items])
-
-        # Get discount code if provided
+        total_price = cart.total_price  # استفاده از مقدار ذخیره‌شده
         discount_code = request.data.get('discount_code')
+        print(discount_code)
         discount_amount = 0
 
         if discount_code:
+            # اعمال تخفیف مشابه کد قبلی
             try:
                 discount = DiscountCode.objects.get(code=discount_code)
-                if discount.start_date > timezone.now() or discount.end_date < timezone.now():
+                print(discount)
+                print(discount_code)
+
+                # بررسی تاریخ شروع و پایان تخفیف
+                current_time = timezone.now()
+                if discount.start_date > current_time or discount.end_date < current_time:
                     return Response(
                         {"detail": "Discount code is expired."},
                         status=status.HTTP_400_BAD_REQUEST,
@@ -216,18 +243,17 @@ class CheckoutAPIView(APIView):
                         {"detail": "Discount code has been used up."},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
-                
-                # Apply discount based on type
-                if discount.type == 'PG':  # Percentage discount
+
+                # محاسبه تخفیف
+                if discount.type == 'PG':  # درصدی
                     discount_amount = total_price * discount.amount / 100
-                elif discount.type == 'FA':  # Fixed Amount discount
+                elif discount.type == 'FA':  # مبلغ ثابت
                     discount_amount = discount.amount
+                # محدود کردن تخفیف به سقف مجاز
+                if discount.max_amount:
+                    discount_amount = min(discount_amount, discount.max_amount)
 
-                # Ensure the discount doesn't exceed the max allowed amount
-                if discount.max_amount and discount_amount > discount.max_amount:
-                    discount_amount = discount.max_amount
-
-                # Update the usage limit of the discount
+                # کاهش تعداد استفاده از کد تخفیف
                 discount.usage_limit -= 1
                 discount.save()
 
@@ -237,17 +263,13 @@ class CheckoutAPIView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        # Calculate the final amount after discount
-        final_amount = total_price - discount_amount
-        if final_amount < 0:
-            final_amount = 0  # Ensure final amount is not negative
-
-        # Check if the address is valid or create a new one if not provided
+        final_price = max(total_price - discount_amount, 0)
+        # Handle address
+        customer = request.user
         address_id = request.data.get('address')
         address = None
 
         if address_id:
-            # Try to get the address if it's already saved
             try:
                 address = Address.objects.get(id=address_id, customer=customer)
             except Address.DoesNotExist:
@@ -256,10 +278,8 @@ class CheckoutAPIView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
-            # If no address is provided, create a new address
             new_address_data = request.data.get('new_address')
             if new_address_data:
-                # Create a new Address object using the provided data
                 address = Address.objects.create(
                     customer=customer,
                     province=new_address_data.get('province'),
@@ -276,27 +296,32 @@ class CheckoutAPIView(APIView):
         order = Order.objects.create(
             customer=customer,
             address=address,
-            discount_code=discount if discount_code else None,
-            total_amount=final_amount
+            discount_code=discount,
+            total_amount=final_price  # قیمت نهایی پس از تخفیف
         )
+        # Retrieve cart and create order items
+        cart_items = CartItem.objects.filter(cart=cart)
 
-        # Create order items
         for cart_item in cart_items:
+            # محاسبه مبلغ تخفیف برای هر آیتم
+            item_discount_amount = cart_item.product.price * cart_item.quantity - cart_item.product.discounted_price * cart_item.quantity
             OrderItem.objects.create(
                 order=order,
                 product=cart_item.product,
                 quantity=cart_item.quantity,
                 price=cart_item.product.price,
-                discount_amount=cart_item.product.price * cart_item.quantity - (cart_item.product.price * cart_item.quantity - final_amount)
+                discount_amount=item_discount_amount  # مبلغ تخفیف برای هر آیتم
             )
 
-        # Clear the cart after checkout
+        # Clear the cart
         cart_items.delete()
 
         return Response(
-            {"detail": f"Order {order.id} placed successfully. Total amount: {final_amount}."},
+            {"detail": f"Order placed successfully. Final price: {final_price}."},
             status=status.HTTP_200_OK,
         )
+
+
 
 class OrderListAPIView(APIView):
     def get(self, request, *args, **kwargs):

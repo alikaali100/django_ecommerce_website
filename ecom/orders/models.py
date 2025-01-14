@@ -3,6 +3,8 @@ from core.models import BaseModel
 from product.models import Product
 from customers.models import Customer,Address
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 class DiscountCode(BaseModel):
     DISCOUNT_TYPES = [
         ('PG', 'Percentage'),
@@ -47,27 +49,31 @@ class Order(BaseModel):
         verbose_name = _('order')
         verbose_name_plural = _('orders')
 
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-    price = models.IntegerField()
-    discount_amount = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.quantity} x {self.product.name} (Order #{self.order.id})"
-
 class Cart(models.Model):
-    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, related_name='cart')
+    customer = models.OneToOneField('customers.Customer', on_delete=models.CASCADE, related_name='cart')
     created_at = models.DateTimeField(auto_now_add=True)
+    total_price = models.PositiveBigIntegerField()
 
     def __str__(self):
         return f"Cart of {self.customer}"
 
+
+
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey('product.Product', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} (Cart of {self.cart.customer})"
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey('orders.Order', on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey('product.Product', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.PositiveIntegerField()    
+    discount_amount = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name} (Order #{self.order.id})"

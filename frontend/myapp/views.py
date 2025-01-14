@@ -154,74 +154,59 @@ def search_products_view(request):
 
 
 def cart_view(request):
-    api_url = 'http://localhost:8000/api/cart/'  # آدرس API شما
-    cart_items = []
-    total_quantity = 0
-    total_price = 0
+    # URL API
+    api_url = "http://localhost:8000/api/cart/"
 
-    # دریافت توکن از کوکی‌ها
-    access_token = request.COOKIES.get('access_token')
-    
-    headers = {}
-    if access_token:
-        headers['Authorization'] = f'Bearer {access_token}'
+    # گرفتن توکن از کوکی
+    token = request.COOKIES.get('access_token')
 
-    try:
-        # ارسال درخواست به API برای دریافت سبد خرید
-        response = requests.get(api_url, headers=headers)
-        response.raise_for_status()
+    # تنظیم هدر درخواست
+    headers = {
+        "Authorization": f"Bearer {token}"
+    } if token else {}
+
+    # ارسال درخواست GET به API
+    response = requests.get(api_url, headers=headers)
+
+    # تبدیل پاسخ به JSON
+    if response.status_code == 200:
         data = response.json()
+    else:
+        data = {"cart_items": [], "total_price": 0.0}
 
-        cart_items = data.get("cart_items", [])
+    # ارسال داده‌ها به قالب
+    return render(request, 'cart.html', {
+        'cart_items': data.get('cart_items', []),
+        'total_price': data.get('total_price', 0.0),
+    })
+def remove_from_cart_view(request):
+    if request.method == "POST":
+        # دریافت اطلاعات محصول
+        product_id = request.POST.get('product_id')
         
-        # محاسبه تعداد و قیمت کل و دریافت اطلاعات محصولات
-        for item in cart_items:
-            product = get_product_details(request, item["product"])  # ارسال request و product_id به تابع
-            item["product"] = product  # افزودن اطلاعات محصول
-            total_quantity += item["quantity"]
-            total_price += item["quantity"] * product["price"]
+        # آدرس API
+        api_url = "http://localhost:8000/api/cart/remove/"
+        
+        # گرفتن توکن از کوکی
+        token = request.COOKIES.get('access_token')
+        
+        # تنظیم هدر درخواست
+        headers = {
+            "Authorization": f"Bearer {token}"
+        } if token else {}
 
-    except requests.RequestException as e:
-        # مدیریت خطا در صورت بروز مشکل
-        print(f"Error fetching cart data: {e}")
-    
-    context = {
-        "cart_items": cart_items,
-        "total_quantity": total_quantity,
-        "total_price": total_price,
-    }
-    
-    return render(request, 'cart.html', context)
-
-def get_product_details(request, product_id):
-    api_url = f'http://localhost:8000/api/products/{product_id}/'  # آدرس API که اطلاعات محصول را برمی‌گرداند
-
-    # دریافت توکن از کوکی‌ها
-    access_token = request.COOKIES.get('access_token')
-    
-    headers = {}
-    if access_token:
-        headers['Authorization'] = f'Bearer {access_token}'
-
-    try:
-        # ارسال درخواست به API با هدرهای Authorization
-        response = requests.get(api_url, headers=headers)
-        response.raise_for_status()
-        product_data = response.json()
-
-        # برگرداندن اطلاعات محصول
-        return {
-            "name": product_data.get("name", "نامشخص"),
-            "price": product_data.get("price", 0),
-            "image": product_data.get("image", "")
+        # داده‌هایی که باید به API ارسال شود
+        data = {
+            "product": product_id
         }
 
-    except requests.RequestException as e:
-        # در صورت بروز خطا، می‌توانید یک محصول پیش‌فرض برگردانید
-        print(f"Error fetching product details: {e}")
-        return {
-            "name": "نامشخص",
-            "price": 0,
-            "image": ""
-        }
-    
+        # ارسال درخواست DELETE به API
+        response = requests.delete(api_url, json=data, headers=headers)
+
+        # مدیریت پاسخ
+        if response.status_code == 200:
+            # موفقیت‌آمیز: بازگشت به سبد خرید
+            return redirect('cart')
+        else:
+            # خطا: نمایش پیام مناسب
+            return redirect('cart', {"error_message": "خطا در حذف محصول."})
