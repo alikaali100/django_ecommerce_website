@@ -1,6 +1,8 @@
 from django.test import TestCase
 from customers.models import Customer, Address
 from django.core.exceptions import ValidationError
+from django.utils.timezone import now
+
 class CustomerModelTest(TestCase):
     def setUp(self):
         self.customer = Customer.objects.create(
@@ -20,15 +22,22 @@ class CustomerModelTest(TestCase):
         self.assertEqual(str(self.customer), "John Doe")
 
     def test_invalid_phone_number(self):
-        with self.assertRaises(Exception):
-            Customer.objects.create(
+        with self.assertRaises(ValidationError):
+            invalid_customer = Customer(
                 first_name="Invalid",
                 last_name="Phone",
                 email="invalid.phone@example.com",
                 phone_number="1234567890"  # Invalid phone number
             )
-            with self.assertRaises(ValidationError):
-                invalid_customer.full_clean() 
+            invalid_customer.full_clean()  # Trigger validation manually
+
+    def test_generate_otp(self):
+        self.customer.generate_otp()
+        self.assertIsNotNone(self.customer.otp)
+        self.assertIsNotNone(self.customer.otp_expiry)
+        self.assertGreater(self.customer.otp_expiry, now())
+
+
 class AddressModelTest(TestCase):
     def setUp(self):
         self.customer = Customer.objects.create(

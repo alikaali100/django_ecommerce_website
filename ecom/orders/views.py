@@ -268,6 +268,7 @@ class CheckoutAPIView(APIView):
         customer = request.user
         address_id = request.data.get('address')
         address = None
+        discount = None
 
         if address_id:
             try:

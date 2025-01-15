@@ -45,7 +45,7 @@
                     <!-- Authentication Check -->
                     {% if user_info %}
                         <!-- Show when the user is logged in -->
-                        <a href="{% url 'cart' %}" class="text-gray-600 hover:text-gray-800">پنل کاربری</a>
+                        <a href="{% url 'userpanel' %}" class="text-gray-600 hover:text-gray-800">پنل کاربری</a>
                         <a href="{% url 'logout' %}" class="text-gray-600 hover:text-gray-800">خروج</a>
                     {% else %}
                         <!-- Show when the user is not logged in -->

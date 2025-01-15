@@ -123,5 +123,7 @@ class UserProfileView(APIView):
         user = request.user
         return Response({
             "username": user.username,
+            "email": user.email,
+            "phonenumber": user.phone_number,
         })
     

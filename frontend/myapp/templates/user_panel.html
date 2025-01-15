@@ -13,33 +13,48 @@
                 <li><strong>ایمیل:</strong> {{ user_info.email }}</li>
                 <li><strong>شماره تلفن:</strong> {{ user_info.phone }}</li>
             </ul>
-            <a href="{% url 'edit_profile' %}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">ویرایش اطلاعات</a>
+            <a href="#" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">ویرایش اطلاعات</a>
         </div>
 
         <!-- بخش سفارش‌ها -->
-        <div class="bg-gray-50 p-4 rounded-lg shadow">
-            <h2 class="text-lg font-bold mb-4">سفارش‌های من</h2>
-            <ul class="space-y-2">
+        <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4">سفارش‌های من</h2>
+            <ul class="divide-y divide-gray-200">
                 {% for order in user_orders %}
-                <li class="border-b pb-2">
-                    <strong>شماره سفارش:</strong> {{ order.id }}<br>
-                    <strong>تاریخ:</strong> <span class="convert-to-persian">{{ order.date }}</span><br>
-                    <strong>مبلغ:</strong> <span class="convert-to-persian">{{ order.total }}</span> تومان
+                <li class="py-4">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold text-gray-700">شماره سفارش:</span>
+                        <span class="text-gray-900">{{ order.id }}</span>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="font-semibold text-gray-700">تاریخ:</span>
+                        <span class="convert-to-persian text-gray-900">{{ order.date }}</span>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="font-semibold text-gray-700">مبلغ:</span>
+                        <span class="convert-to-persian text-green-600 font-bold">{{ order.total }} تومان</span>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="font-semibold text-gray-700">وضعیت:</span>
+                        <span class="text-sm rounded-full px-3 py-1 text-white 
+                            {% if order.status == 'completed' %} bg-green-500 {% else %} bg-yellow-500 {% endif %}">
+                            {{ order.status | default:"نامشخص" }}
+                        </span>
+                    </div>
                 </li>
                 {% empty %}
-                <li>شما هنوز سفارشی ثبت نکرده‌اید.</li>
+                <li class="py-4 text-center text-gray-600">شما هنوز سفارشی ثبت نکرده‌اید.</li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'orders' %}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">مشاهده همه سفارش‌ها</a>
         </div>
 
         <!-- بخش تنظیمات -->
         <div class="bg-gray-50 p-4 rounded-lg shadow">
             <h2 class="text-lg font-bold mb-4">تنظیمات</h2>
             <ul class="space-y-2">
-                <li><a href="{% url 'change_password' %}" class="text-blue-500 hover:underline">تغییر رمز عبور</a></li>
-                <li><a href="{% url 'notifications' %}" class="text-blue-500 hover:underline">مدیریت اعلان‌ها</a></li>
-                <li><a href="{% url 'delete_account' %}" class="text-red-500 hover:underline">حذف حساب کاربری</a></li>
+                <li><a href="#" class="text-blue-500 hover:underline">تغییر رمز عبور</a></li>
+                <li><a href="#" class="text-blue-500 hover:underline">مدیریت اعلان‌ها</a></li>
+                <li><a href="#" class="text-red-500 hover:underline">حذف حساب کاربری</a></li>
             </ul>
         </div>
     </div>

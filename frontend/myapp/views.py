@@ -213,3 +213,39 @@ def remove_from_cart_view(request):
         
 def checkout_view(request):
     return render(request,'checkout.html')
+
+def userpanel_view(request):
+    api_url = "http://localhost:8000/api/cart/orders/"
+    token = request.COOKIES.get('access_token')
+    headers = {
+        "Authorization": f"Bearer {token}"
+    } if token else {}
+    try:
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        user_orders = response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching orders: {e}")
+        user_orders = []
+
+    # Transform data for rendering if needed
+    formatted_orders = [
+        {
+            'id': order['id'],
+            'date': order['created_at'],
+            'total': order['total_amount'],
+            'status': order['status'],
+        }
+        for order in user_orders
+    ]
+
+    context = {
+        'user_info': {
+            'name': 'نام کاربر',  # Replace with real data
+            'email': 'ایمیل کاربر',
+            'phone': 'شماره تلفن کاربر',
+        },
+        'user_orders': formatted_orders,
+    }
+
+    return render(request, 'user_panel.html', context)
