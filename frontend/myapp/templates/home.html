@@ -24,7 +24,7 @@
                         <h3 class="text-lg font-semibold mb-2">{{ product.name }}</h3>
                         <div class="flex justify-between items-center mb-4">
                             <span class="text-gray-600 line-through convert-to-persian">{{ product.price }} تومان</span>
-                            <span class="text-green-600 font-bold">{{ product.discounted_price }} تومان</span>
+                            <span class="text-green-600 font-bold convert-to-persian    ">{{ product.discounted_price }} تومان</span>
                         </div>
                         <button 
                         class="add-to-cart-btn bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg hover:bg-blue-600 text-sm" 
@@ -98,7 +98,7 @@
             const accessToken = getAccessTokenFromCookies();
 
             if (!csrfToken || !accessToken) {
-                alert('Token not found. Please try again.');
+                alert('ابتدا وارد حساب کاربری شوید');
                 return;
             }
 

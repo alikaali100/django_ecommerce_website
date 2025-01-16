@@ -40,7 +40,7 @@ class AddToCartAPIView(APIView):
         cart_item.save()
 
         return Response(
-            {"detail": "Item added to cart successfully."},
+            {"detail": "این محصول با موفقیت به سبد خرید اضافه شد"},
             status=status.HTTP_200_OK,
         )
     

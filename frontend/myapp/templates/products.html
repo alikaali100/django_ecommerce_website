@@ -66,7 +66,14 @@
                     {{ product.name }}
                 </a>
                 <p class="text-gray-600">{{ product.description }}</p>
+                {% if product.discounted_price < product.price %}
+                <div class="flex items-center space-x-2 mt-2">
+                    <span class="text-gray-600 line-through convert-to-persian">{{ product.price }} تومان</span>
+                    <span class="text-green-600 font-bold convert-to-persian">{{ product.discounted_price }} تومان</span>
+                </div>
+                {% else %}
                 <p class="text-lg font-bold text-gray-900 mt-2 convert-to-persian">{{ product.price }} تومان</p>
+                {% endif %}
             </div>
             <button 
                 class="add-to-cart-btn bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg hover:bg-blue-600 text-sm" 
@@ -75,6 +82,7 @@
             </button>
         </div>
         {% endfor %}
+        
     </div>
 </main>
 
@@ -132,7 +140,7 @@
             const accessToken = getAccessTokenFromCookies();
 
             if (!csrfToken || !accessToken) {
-                alert('Token not found. Please try again.');
+                alert('ابتدا وارد حساب کاربری شوید');
                 return;
             }
 
