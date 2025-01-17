@@ -77,7 +77,7 @@ class CartAPIView(APIView):
             product = item.product
             discounted_price = product.discounted_price
             total_price += discounted_price * item.quantity
-            total_quantity += item.quantity  # جمع‌کردن قیمت محصولات با تخفیف
+            total_quantity += item.quantity  
 
             cart_data.append({
                 "product_id":product.id,
@@ -87,7 +87,6 @@ class CartAPIView(APIView):
                 "discounted_price": discounted_price,
             })
 
-        # ذخیره total_price در مدل Cart
         cart.total_price = total_price
         cart.save()
 
@@ -110,7 +109,7 @@ class RemoveFromCartAPIView(APIView):
             )
 
         customer = request.user
-        product_id = request.data.get('product')  # product ID to be removed from cart
+        product_id = request.data.get('product')  
 
         # Validate product
         try:
@@ -201,7 +200,6 @@ class UpdateCartItemAPIView(APIView):
             status=status.HTTP_200_OK,
         )
     
-from django.utils import timezone
 
 class CheckoutAPIView(APIView):
     def post(self, request, *args, **kwargs):
@@ -219,19 +217,16 @@ class CheckoutAPIView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        total_price = cart.total_price  # استفاده از مقدار ذخیره‌شده
+        total_price = cart.total_price 
         discount_code = request.data.get('discount_code')
         print(discount_code)
         discount_amount = 0
 
         if discount_code:
-            # اعمال تخفیف مشابه کد قبلی
             try:
                 discount = DiscountCode.objects.get(code=discount_code)
                 print(discount)
                 print(discount_code)
-
-                # بررسی تاریخ شروع و پایان تخفیف
                 current_time = timezone.now()
                 if discount.start_date > current_time or discount.end_date < current_time:
                     return Response(
@@ -244,16 +239,13 @@ class CheckoutAPIView(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                # محاسبه تخفیف
-                if discount.type == 'PG':  # درصدی
+                if discount.type == 'PG':  
                     discount_amount = total_price * discount.amount / 100
-                elif discount.type == 'FA':  # مبلغ ثابت
+                elif discount.type == 'FA': 
                     discount_amount = discount.amount
-                # محدود کردن تخفیف به سقف مجاز
                 if discount.max_amount:
                     discount_amount = min(discount_amount, discount.max_amount)
 
-                # کاهش تعداد استفاده از کد تخفیف
                 discount.usage_limit -= 1
                 discount.save()
 
@@ -298,20 +290,19 @@ class CheckoutAPIView(APIView):
             customer=customer,
             address=address,
             discount_code=discount,
-            total_amount=final_price  # قیمت نهایی پس از تخفیف
+            total_amount=final_price  
         )
         # Retrieve cart and create order items
         cart_items = CartItem.objects.filter(cart=cart)
 
         for cart_item in cart_items:
-            # محاسبه مبلغ تخفیف برای هر آیتم
             item_discount_amount = cart_item.product.price * cart_item.quantity - cart_item.product.discounted_price * cart_item.quantity
             OrderItem.objects.create(
                 order=order,
                 product=cart_item.product,
                 quantity=cart_item.quantity,
                 price=cart_item.product.price,
-                discount_amount=item_discount_amount  # مبلغ تخفیف برای هر آیتم
+                discount_amount=item_discount_amount  
             )
 
         # Clear the cart

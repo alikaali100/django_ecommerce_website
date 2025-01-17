@@ -1,17 +1,15 @@
 from django.shortcuts import render, redirect
 import requests
 from django.http import JsonResponse
+from django.core.paginator import Paginator
 
 def products_view(request):
     try:
-        # دریافت محصولات
         response = requests.get('http://localhost:8000/api/products/')
         if response.status_code == 200:
             products = response.json()
         else:
             products = []
-        
-        # دریافت دسته‌بندی‌ها
         category_response = requests.get('http://127.0.0.1:8000/api/categories/')
         if category_response.status_code == 200:
             categories = category_response.json()
@@ -21,12 +19,15 @@ def products_view(request):
         products = []
         categories = []
         print(f"Error fetching data: {e}")
+        
+    paginator = Paginator(products, 4)  
+    page_number = request.GET.get('page')  
+    page_obj = paginator.get_page(page_number)  
 
     return render(request, 'products.html', {
-        'products': products,
-        'categories': categories
+        'page_obj': page_obj,   
+        'categories': categories  
     })
-
 
 def home_view(request):
     try:
@@ -50,7 +51,6 @@ def register_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        # Send the registration data to your backend API
         response = requests.post(f"{API_BASE_URL}/api/customers/register/", data={
             "username": username,
             "email": email,
@@ -58,27 +58,23 @@ def register_view(request):
         })
 
         if response.status_code == 201:
-            # Redirect to login page after successful registration
             return redirect('/login/')
         else:
-            # Handle error (show error message to user)
             context = {"error": "Registration failed, please try again."}
             return render(request, "register.html", context)
 
     return render(request, "register.html")
     
-API_BASE_URL = "http://127.0.0.1:8000"  # Update to match your backend URL
+API_BASE_URL = "http://127.0.0.1:8000" 
 
 def login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        # Call the backend login API
         response = requests.post(f"{API_BASE_URL}/api/customers/login/", data={"email": email, "password": password})
 
         if response.status_code == 200:
-            # Redirect to home page after successful login
             return render(request, "login.html")
         else:
             # Handle error
@@ -90,20 +86,16 @@ from django.http import HttpResponse
 
 def logout_view(request):
     try:
-        # ارسال درخواست logout به API
         response = requests.post(
             f"{API_BASE_URL}/api/customers/logout/",
-            cookies=request.COOKIES,  # ارسال کوکی‌ها برای احراز هویت
+            cookies=request.COOKIES, 
         )
         
         if response.status_code == 200:
-            # پاک کردن کوکی‌ها در سمت کلاینت
-            logout_response = redirect("login")  # ریدایرکت به صفحه لاگین
-            logout_response.delete_cookie("access_token")  # پاک کردن کوکی access_token
-            # در صورت نیاز کوکی‌های دیگر را نیز اینجا پاک کنید
+            logout_response = redirect("login")  
+            logout_response.delete_cookie("access_token")  
             return logout_response
         else:
-            # Handle unsuccessful logout response
             return HttpResponse("Logout failed. Please try again.", status=400)
     except Exception as e:
         # Handle network error
@@ -112,25 +104,20 @@ def logout_view(request):
 
 from django.http import Http404
 def product_detail_view(request, product_id):
-    # API URLs
     product_api_url = f"http://localhost:8000/api/products/{product_id}/"
     features_api_url = f"http://localhost:8000/api/product-features/"
 
     try:
-        # Fetch product details
         product_response = requests.get(product_api_url)
         product_response.raise_for_status()
         product = product_response.json()
 
-        # Fetch all features
         features_response = requests.get(features_api_url)
         features_response.raise_for_status()
         all_features = features_response.json()
 
-        # Filter features for the current product
         product_features = [feature for feature in all_features if feature['product'] == product_id]
 
-        # Add features to product dictionary
         product['features'] = product_features
 
     except requests.exceptions.RequestException:
@@ -154,61 +141,42 @@ def search_products_view(request):
 
 
 def cart_view(request):
-    # URL API
     api_url = "http://localhost:8000/api/cart/"
-
-    # گرفتن توکن از کوکی
     token = request.COOKIES.get('access_token')
 
-    # تنظیم هدر درخواست
     headers = {
         "Authorization": f"Bearer {token}"
     } if token else {}
-
-    # ارسال درخواست GET به API
     response = requests.get(api_url, headers=headers)
 
-    # تبدیل پاسخ به JSON
     if response.status_code == 200:
         data = response.json()
     else:
         data = {"cart_items": [], "total_price": 0.0}
 
-    # ارسال داده‌ها به قالب
     return render(request, 'cart.html', {
         'cart_items': data.get('cart_items', []),
         'total_price': data.get('total_price', 0.0),
     })
+
 def remove_from_cart_view(request):
     if request.method == "POST":
-        # دریافت اطلاعات محصول
         product_id = request.POST.get('product_id')
-        
-        # آدرس API
         api_url = "http://localhost:8000/api/cart/remove/"
-        
-        # گرفتن توکن از کوکی
+
         token = request.COOKIES.get('access_token')
-        
-        # تنظیم هدر درخواست
         headers = {
             "Authorization": f"Bearer {token}"
         } if token else {}
 
-        # داده‌هایی که باید به API ارسال شود
         data = {
             "product": product_id
         }
-
-        # ارسال درخواست DELETE به API
         response = requests.delete(api_url, json=data, headers=headers)
 
-        # مدیریت پاسخ
         if response.status_code == 200:
-            # موفقیت‌آمیز: بازگشت به سبد خرید
             return redirect('cart')
         else:
-            # خطا: نمایش پیام مناسب
             return redirect('cart', {"error_message": "خطا در حذف محصول."})
         
 def checkout_view(request):
@@ -222,13 +190,12 @@ def userpanel_view(request):
     } if token else {}
     try:
         response = requests.get(api_url, headers=headers)
-        response.raise_for_status()  # Raise HTTPError for bad responses
+        response.raise_for_status()  
         user_orders = response.json()
     except requests.exceptions.RequestException as e:
         print(f"Error fetching orders: {e}")
         user_orders = []
 
-    # Transform data for rendering if needed
     formatted_orders = [
         {
             'id': order['id'],
@@ -241,7 +208,7 @@ def userpanel_view(request):
 
     context = {
         'user_info': {
-            'name': 'نام کاربر',  # Replace with real data
+            'name': 'نام کاربر', 
             'email': 'ایمیل کاربر',
             'phone': 'شماره تلفن کاربر',
         },

@@ -56,7 +56,7 @@
 <main class="container mx-auto px-4 py-8">
     <!-- محصولات -->
     <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
-        {% for product in products %}
+        {% for product in page_obj %}
         <div class="p-4 flex flex-col h-full px-0 mx-0">
             <a href="{% url 'product_detail' product.id %}" class="block">
                 <img src="{{ product.image }}" alt="{{ product.name }}" class="w-full sm:w-48 md:w-64 lg:w-80 h-auto object-contain">
@@ -82,53 +82,97 @@
             </button>
         </div>
         {% endfor %}
-        
+    </div>
+    
+    <!-- لینک‌های صفحه‌بندی -->
+    <div class="pagination mt-6 text-center">
+        <ul class="inline-flex space-x-2 space-x-reverse">
+            {% if page_obj.has_previous %}
+            <li>
+                <a href="?page=1" class="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">اول</a>
+            </li>
+            <li>
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">قبلی</a>
+            </li>
+            {% endif %}
+    
+            <li>
+                <span class="px-3 py-1 bg-blue-500 text-white rounded">{{ page_obj.number }}</span>
+            </li>
+    
+            {% if page_obj.has_next %}
+            <li>
+                <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">بعدی</a>
+            </li>
+            <li>
+                <a href="?page={{ page_obj.paginator.num_pages }}" class="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">آخر</a>
+            </li>
+            {% endif %}
+        </ul>
     </div>
 </main>
 
 <!-- اسکریپت برای بارگذاری پویا -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const buttons = document.querySelectorAll('.category-btn');
-        const productsContainer = document.getElementById('products-container');
+document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.category-btn');
+    const productsContainer = document.getElementById('products-container');
 
-        buttons.forEach(button => {
-            button.addEventListener('click', function () {
-                const categoryId = this.getAttribute('data-category-id');
-                
-                // درخواست به API
-                fetch(`http://localhost:8000/api/categories/${categoryId}/products/`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // پاک کردن محصولات فعلی
-                        productsContainer.innerHTML = '';
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            const categoryId = this.getAttribute('data-category-id');
+            
+            // بررسی اینکه آیا ID معتبر است
+            if (!categoryId) {
+                console.error('ID دسته‌بندی وجود ندارد!');
+                return;
+            }
 
-                        // افزودن محصولات جدید
-                        data.forEach(product => {
-                            const productHTML = `
-                                <div class="p-4 flex flex-col h-full px-0 mx-0">
-                                    <a href="/product/${product.id}" class="block">
-                                        <img src="${product.image}" alt="${product.name}" class="w-full sm:w-48 md:w-64 lg:w-80 h-auto object-contain">
+            // درخواست به API برای دریافت محصولات
+            fetch(`http://localhost:8000/api/categories/${categoryId}/products/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`خطا در دریافت محصولات: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // پاک کردن محصولات فعلی
+                    productsContainer.innerHTML = '';
+
+                    // بررسی اگر محصولات خالی باشد
+                    if (!data || data.length === 0) {
+                        productsContainer.innerHTML = `<p class="text-gray-500">هیچ محصولی یافت نشد.</p>`;
+                        return;
+                    }
+
+                    // افزودن محصولات جدید
+                    data.forEach(product => {
+                        const productHTML = `
+                            <div class="p-4 flex flex-col h-full px-0 mx-0">
+                                <a href="/product/${product.id}" class="block">
+                                    <img src="${product.image}" alt="${product.name}" class="w-full sm:w-48 md:w-64 lg:w-80 h-auto object-contain">
+                                </a>
+                                <div class="p-4 flex-grow">
+                                    <a href="/product/${product.id}" class="text-xl font-semibold text-gray-800 hover:text-blue-500">
+                                        ${product.name}
                                     </a>
-                                    <div class="p-4 flex-grow">
-                                        <a href="/product/${product.id}" class="text-xl font-semibold text-gray-800 hover:text-blue-500">
-                                            ${product.name}
-                                        </a>
-                                        <p class="text-gray-600">${product.description}</p>
-                                        <p class="text-lg font-bold text-gray-900 mt-2">${product.price} تومان</p>
-                                    </div>
-                                    <button class="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg hover:bg-blue-600 text-sm">
-                                        افزودن به سبد خرید
-                                    </button>
+                                    <p class="text-gray-600">${product.description}</p>
+                                    <p class="text-lg font-bold text-gray-900 mt-2">${product.price} تومان</p>
                                 </div>
-                            `;
-                            productsContainer.innerHTML += productHTML;
-                        });
-                    })
-                    .catch(error => console.error('خطا در دریافت محصولات:', error));
-            });
+                                <button class="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg hover:bg-blue-600 text-sm">
+                                    افزودن به سبد خرید
+                                </button>
+                            </div>
+                        `;
+                        productsContainer.innerHTML += productHTML;
+                    });
+                })
+                .catch(error => console.error('خطا در دریافت محصولات:', error));
         });
     });
+});
+
     document.addEventListener('DOMContentLoaded', function () {
     const cartButtons = document.querySelectorAll('.add-to-cart-btn');
 

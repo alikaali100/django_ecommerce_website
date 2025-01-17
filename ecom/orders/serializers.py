@@ -15,8 +15,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True)  # بدون نیاز به 'source'
-    address = serializers.CharField(source='address.__str__')  # آدرس به صورت رشته
+    items = OrderItemSerializer(many=True)  
+    address = serializers.CharField(source='address.__str__')  
     discount_code = serializers.CharField(source='discount_code.code', required=False)
 
     class Meta:

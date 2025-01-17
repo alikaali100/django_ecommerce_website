@@ -13,12 +13,10 @@
         document.addEventListener("DOMContentLoaded", () => {
             const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
             
-            // تابع برای تبدیل اعداد انگلیسی به فارسی
             function convertToPersianDigits(input) {
                 return input.toString().replace(/\d/g, (digit) => persianDigits[digit]);
             }
     
-            // تبدیل مقادیر خاص در صفحه به اعداد فارسی
             document.querySelectorAll(".convert-to-persian").forEach((element) => {
                 element.textContent = convertToPersianDigits(element.textContent);
             });
@@ -29,7 +27,7 @@
         <nav class="container mx-auto px-4 py-3">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-4 space-x-reverse">
-                    <a href="{% url 'home' %}" class="text-xl font-bold">فروشگاه</a>
+                    <a href="{% url 'home' %}" class="w-20"><img src="https://techwise.storage.c2.liara.space/Screenshot%202025-01-15%20013210.jpg" alt=""></a>
                     <a href="{% url 'products' %}" class="text-gray-600 hover:text-gray-800">محصولات</a>
                     <a href="{% url 'contact'%}" class="text-gray-600 hover:text-gray-800">تماس با ما</a>
                 </div>
@@ -95,12 +93,11 @@
     document.addEventListener("DOMContentLoaded", () => {
     const cartCountElement = document.getElementById("cart-count");
 
-    // درخواست به API برای دریافت تعداد محصولات سبد خرید
     fetch('http://localhost:8000/api/cart/', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${getCookie('access_token')}` // اضافه کردن توکن در صورت نیاز
+            'Authorization': `Bearer ${getCookie('access_token')}` 
         }
     })
         .then(response => {
@@ -110,7 +107,6 @@
             return response.json();
         })
         .then(data => {
-            // به‌روزرسانی مقدار نمایش داده‌شده
             const totalQuantity = data.total_quantity || 0;
             cartCountElement.textContent = convertToPersianDigits(totalQuantity);
         })
@@ -118,13 +114,11 @@
             console.error('خطا:', error);
         });
 
-    // تابع تبدیل اعداد انگلیسی به فارسی
     function convertToPersianDigits(input) {
         const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
         return input.toString().replace(/\d/g, (digit) => persianDigits[digit]);
     }
 
-    // تابع گرفتن کوکی (در صورت نیاز)
     function getCookie(name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
