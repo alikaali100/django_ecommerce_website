@@ -18,15 +18,13 @@ class Customer(AbstractUser):
     )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
-    otp = models.CharField(max_length=6, blank=True, null=True)  # Add OTP field
-    otp_expiry = models.DateTimeField(blank=True, null=True)  # Add OTP expiry field
 
-    def generate_otp(self):
-        """Generate a 6-digit OTP and set an expiry time."""
-        import random
-        self.otp = str(random.randint(100000, 999999))
-        self.otp_expiry = now() + timedelta(minutes=10)  # OTP valid for 5 minutes
-        self.save()
+    # def generate_otp(self):
+    #     """Generate a 6-digit OTP and set an expiry time."""
+    #     import random
+    #     self.otp = str(random.randint(100000, 999999))
+    #     self.otp_expiry = now() + timedelta(minutes=10)  # OTP valid for 5 minutes
+    #     self.save()
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 

@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils.http import http_date
 from datetime import timedelta,datetime
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+from django.core.cache import cache
 
 class RegisterView(APIView):
     def post(self, request):
@@ -61,16 +61,20 @@ class SendOTPView(APIView):
         if serializer.is_valid():
             email = serializer.validated_data['email']
             try:
-                # Try to fetch the customer by email
+                # بررسی وجود کاربر
                 customer = Customer.objects.get(email=email)
                 
-                # Generate OTP for the customer
-                customer.generate_otp()
-
-                # Send OTP via email
+                # تولید OTP
+                import random
+                otp = str(random.randint(100000, 999999))
+                
+                # ذخیره OTP در Redis با انقضای 5 دقیقه
+                cache.set(f"otp:{email}", otp, timeout=300)
+                
+                # ارسال OTP از طریق ایمیل
                 send_mail(
                     subject="Your OTP Code",
-                    message=f"Your OTP code is {customer.otp}. It is valid for 5 minutes.",
+                    message=f"Your OTP code is {otp}. It is valid for 5 minutes.",
                     from_email="alikaali1990@gmail.com",
                     recipient_list=[customer.email],
                 )
@@ -78,7 +82,6 @@ class SendOTPView(APIView):
                 return Response({"message": "OTP sent successfully."}, status=status.HTTP_200_OK)
             
             except Customer.DoesNotExist:
-                # If customer is not found, return a 404 error
                 return Response({"error": "Customer with this email not found."}, status=status.HTTP_404_NOT_FOUND)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -89,26 +92,27 @@ class ValidateOTPView(APIView):
         if serializer.is_valid():
             email = serializer.validated_data['email']
             otp = serializer.validated_data.get('otp')
-            try:
+            
+            cached_otp = cache.get(f"otp:{email}")
+            if cached_otp is None:
+                return Response({"error": "OTP has expired or does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if cached_otp == otp:
+                cache.delete(f"otp:{email}")
                 customer = Customer.objects.get(email=email)
-                if customer.otp == otp and now() < customer.otp_expiry:
-                    customer.otp = None
-                    customer.otp_expiry = None
-                    customer.save()
+                refresh = RefreshToken.for_user(customer)
+                access_token = str(refresh.access_token)
 
-                    refresh = RefreshToken.for_user(customer)  
-                    access_token = str(refresh.access_token)
-
-                    return Response({
-                        "message": "OTP validated successfully.",
-                        "access": access_token,
-                        "refresh": str(refresh)
-                    }, status=status.HTTP_200_OK)
-                else:
-                    return Response({"error": "Invalid or expired OTP."}, status=status.HTTP_400_BAD_REQUEST)
-            except Customer.DoesNotExist:
-                return Response({"error": "Customer with this email not found."}, status=status.HTTP_404_NOT_FOUND)
+                return Response({
+                    "message": "OTP validated successfully.",
+                    "access": access_token,
+                    "refresh": str(refresh)
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class LogoutView(APIView):
     def post(self, request):
         response = Response({"message": "Successfully logged out."}, status=200)
