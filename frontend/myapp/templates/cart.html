@@ -67,7 +67,7 @@
 </div>
 <script>
     async function updateQuantity(productId, quantity) {
-        const url = 'http://localhost:8000/api/cart/update/';
+        const url = 'http://localhost:8000/api/cart/add/';
         const token = getCookie('access_token'); // تابعی برای گرفتن توکن از کوکی
     
         const data = {
@@ -77,7 +77,7 @@
     
         try {
             const response = await fetch(url, {
-                method: 'PUT',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`

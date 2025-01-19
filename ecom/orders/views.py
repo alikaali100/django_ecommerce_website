@@ -6,6 +6,7 @@ from product.models import Product
 from customers.models import Customer, Address
 from .serializers import CartItemSerializer, OrderSerializer
 from django.utils import timezone
+from django.utils.timezone import now
 
 class AddToCartAPIView(APIView):
     def post(self, request, *args, **kwargs):
@@ -33,19 +34,35 @@ class AddToCartAPIView(APIView):
 
         # Add or update cart item
         cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+
         if not created:
-            cart_item.quantity += int(quantity)
+            current_quantity = cart_item.quantity
+            new_quantity = int(quantity)
+
+            if new_quantity > current_quantity:
+                # Increase quantity directly
+                cart_item.quantity += new_quantity - current_quantity
+            elif new_quantity < current_quantity:
+                # Decrease quantity directly
+                cart_item.quantity -= current_quantity - new_quantity
+
+                # If quantity becomes zero, delete the item
+                if cart_item.quantity <= 0:
+                    cart_item.delete()
+                    return Response(
+                        {"detail": "Item removed from cart."},
+                        status=status.HTTP_200_OK,
+                    )
         else:
             cart_item.quantity = int(quantity)
+
         cart_item.save()
 
         return Response(
-            {"detail": "این محصول با موفقیت به سبد خرید اضافه شد"},
+            {"detail": "Cart updated successfully."},
             status=status.HTTP_200_OK,
         )
     
-from django.utils.timezone import now
-
 class CartAPIView(APIView):
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -143,60 +160,6 @@ class RemoveFromCartAPIView(APIView):
 
         return Response(
             {"detail": "Item removed from cart successfully."},
-            status=status.HTTP_200_OK,
-        )
-    
-class UpdateCartItemAPIView(APIView):
-    def put(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return Response(
-                {"detail": "Please log in to update items in your cart."},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-
-        customer = request.user
-        product_id = request.data.get('product')
-        quantity = request.data.get('quantity')
-
-        if quantity is None or quantity <= 0:
-            return Response(
-                {"detail": "Quantity must be greater than zero."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # Validate product
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
-            return Response(
-                {"detail": "Product not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        # Retrieve or create cart for the customer
-        try:
-            cart = Cart.objects.get(customer=customer)
-        except Cart.DoesNotExist:
-            return Response(
-                {"detail": "Cart not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        # Find the cart item to update
-        try:
-            cart_item = CartItem.objects.get(cart=cart, product=product)
-        except CartItem.DoesNotExist:
-            return Response(
-                {"detail": "Item not found in cart."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        # Update the quantity
-        cart_item.quantity = quantity
-        cart_item.save()
-
-        return Response(
-            {"detail": "Item quantity updated successfully."},
             status=status.HTTP_200_OK,
         )
     
