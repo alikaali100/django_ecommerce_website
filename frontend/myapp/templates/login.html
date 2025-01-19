@@ -84,7 +84,6 @@
             return;
         }
 
-        // ارسال درخواست برای دریافت OTP
         try {
             const response = await fetch('http://127.0.0.1:8000/api/customers/send_otp/', {
                 method: 'POST',

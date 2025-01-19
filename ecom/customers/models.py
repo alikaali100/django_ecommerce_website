@@ -25,7 +25,7 @@ class Customer(AbstractUser):
         """Generate a 6-digit OTP and set an expiry time."""
         import random
         self.otp = str(random.randint(100000, 999999))
-        self.otp_expiry = now() + timedelta(minutes=5)  # OTP valid for 5 minutes
+        self.otp_expiry = now() + timedelta(minutes=10)  # OTP valid for 5 minutes
         self.save()
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

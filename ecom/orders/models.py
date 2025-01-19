@@ -52,7 +52,7 @@ class Order(BaseModel):
 class Cart(models.Model):
     customer = models.OneToOneField('customers.Customer', on_delete=models.CASCADE, related_name='cart')
     created_at = models.DateTimeField(auto_now_add=True)
-    total_price = models.PositiveBigIntegerField()
+    total_price = models.PositiveBigIntegerField(default=0)
 
     def __str__(self):
         return f"Cart of {self.customer}"

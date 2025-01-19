@@ -137,7 +137,12 @@ def search_products_view(request):
         products = []
         print(f"Error fetching search results: {e}")
 
-    return render(request, 'products.html', {'products': products})
+    # اعمال صفحه‌بندی
+    paginator = Paginator(products, 10)  # نمایش 10 محصول در هر صفحه
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'products.html', {'page_obj': page_obj, 'query': query})
 
 
 def cart_view(request):
