@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_filters',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
+    'drf_yasg',
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
