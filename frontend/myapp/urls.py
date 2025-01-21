@@ -14,5 +14,4 @@ urlpatterns = [
     path('cart/remove/', remove_from_cart_view, name='remove_from_cart'),
     path('checkout/', checkout_view, name='checkout'),
     path('user_panel/',userpanel_view, name='userpanel'),
-    # path('sync-cart/', sync_cart, name='sync_cart'),
 ]
