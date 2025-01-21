@@ -10,3 +10,13 @@ class CustomerSerializer(serializers.ModelSerializer):
 class OTPSerializer(serializers.Serializer):
     email = serializers.EmailField()
     otp = serializers.CharField(required=False)
+
+class UpdateCustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['first_name', 'last_name', 'phone_number']  # فقط فیلدهایی که می‌خواهید به‌روزرسانی شوند
+        extra_kwargs = {
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+            'phone_number': {'required': False},
+        }

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 import requests
 from django.http import JsonResponse
 from django.core.paginator import Paginator
+import json
 
 def products_view(request):
     try:
@@ -146,24 +147,141 @@ def search_products_view(request):
 
 
 def cart_view(request):
-    api_url = "http://localhost:8000/api/cart/"
+    cart_items = []
+    total_price = 0
+
+    # بررسی وجود اکسس توکن
     token = request.COOKIES.get('access_token')
 
-    headers = {
-        "Authorization": f"Bearer {token}"
-    } if token else {}
-    response = requests.get(api_url, headers=headers)
+    if token:
+        # اگر اکسس توکن وجود داشته باشد، اطلاعات سبد خرید را از API دریافت می‌کنیم
+        api_url = "http://localhost:8000/api/cart/"
+        headers = {"Authorization": f"Bearer {token}"}
+        response = requests.get(api_url, headers=headers)
 
-    if response.status_code == 200:
-        data = response.json()
+        if response.status_code == 200:
+            data = response.json()
+            cart_items = data.get('cart_items', [])
+            total_price = data.get('total_price', 0)
+        else:
+            # اگر مشکلی در ارتباط با API وجود داشت
+            cart_items = []
+            total_price = 0
     else:
-        data = {"cart_items": [], "total_price": 0.0}
+        # اگر اکسس توکن وجود نداشت، اطلاعات سبد خرید از کوکی خوانده می‌شود
+        guest_cart_cookie = request.COOKIES.get('guest_cart')
+        guest_cart = []
+
+        if guest_cart_cookie:
+            try:
+                guest_cart = json.loads(guest_cart_cookie)
+            except json.JSONDecodeError:
+                guest_cart = []
+
+        # آدرس API محصولات
+        products_api_url = "http://localhost:8000/api/products/"
+        products_response = requests.get(products_api_url)
+
+        if products_response.status_code == 200:
+            products_data = products_response.json()
+            products_dict = {str(product["id"]): product for product in products_data}
+
+            # پردازش اطلاعات سبد خرید از کوکی
+            for item in guest_cart:
+                product_id = str(item["product"])
+                quantity = item["quantity"]
+
+                if product_id in products_dict:
+                    product = products_dict[product_id]
+                    discounted_price = product.get("discounted_price", product["price"])
+                    total_price += discounted_price * quantity
+                    cart_items.append({
+                        "product_id": product["id"],
+                        "product_name": product["name"],
+                        "product_price": product["price"],
+                        "discounted_price": discounted_price,
+                        "quantity": quantity,
+                    })
 
     return render(request, 'cart.html', {
-        'cart_items': data.get('cart_items', []),
-        'total_price': data.get('total_price', 0.0),
+        'cart_items': cart_items,
+        'total_price': total_price,
     })
+# def sync_cart(request):
+#     if not request.user.is_authenticated:
+#         return JsonResponse({'error': 'User not authenticated'}, status=401)
 
+#     # گرفتن توکن از هدر درخواست
+#     token = request.headers.get('Authorization', None)
+#     if not token:
+#         return JsonResponse({'error': 'Access token is required'}, status=400)
+
+#     # خواندن کوکی
+#     guest_cart_cookie = request.COOKIES.get('guest_cart', '[]')
+#     guest_cart = json.loads(guest_cart_cookie)
+
+#     # دریافت کارت از API
+#     try:
+#         response = requests.get(
+#             "http://localhost:8000/api/cart/",
+#             headers={'Authorization': token}
+#         )
+#         if response.status_code != 200:
+#             return JsonResponse({'error': 'Failed to fetch cart from API'}, status=response.status_code)
+
+#         user_cart = response.json()
+#         user_cart_dict = {str(item['product']): item['quantity'] for item in user_cart}
+
+#         # حالت 1: اقلامی که فقط در کوکی هستند
+#         for item in guest_cart:
+#             product_id = str(item['product'])
+#             quantity = item['quantity']
+#             if product_id not in user_cart_dict:
+#                 # اضافه کردن به دیتابیس
+#                 data = {
+#                     'product': product_id,
+#                     'quantity': quantity
+#                 }
+#                 add_response = requests.post(
+#                     "http://localhost:8000/api/cart/add/",
+#                     headers={'Authorization': token, 'Content-Type': 'application/json'},
+#                     data=json.dumps(data)
+#                 )
+#                 if add_response.status_code != 200:
+#                     return JsonResponse({'error': 'Failed to add item to database'}, status=add_response.status_code)
+
+#         # حالت 2: اقلامی که فقط در دیتابیس هستند
+#         for product_id, quantity in user_cart_dict.items():
+#             if not any(item['product'] == int(product_id) for item in guest_cart):
+#                 # اضافه کردن به کوکی
+#                 guest_cart.append({'product': int(product_id), 'quantity': quantity})
+
+#         # حالت 3: اقلامی که در هر دو هستند ولی تعداد متفاوت است
+#         for item in guest_cart:
+#             product_id = str(item['product'])
+#             quantity = item['quantity']
+#             if product_id in user_cart_dict and user_cart_dict[product_id] != quantity:
+#                 # به‌روزرسانی تعداد در دیتابیس
+#                 data = {
+#                     'product': product_id,
+#                     'quantity': quantity
+#                 }
+#                 update_response = requests.post(
+#                     "http://localhost:8000/api/cart/add/",
+#                     headers={'Authorization': token, 'Content-Type': 'application/json'},
+#                     data=json.dumps(data)
+#                 )
+#                 if update_response.status_code != 200:
+#                     return JsonResponse({'error': 'Failed to update item in database'}, status=update_response.status_code)
+
+#         # به‌روزرسانی کوکی
+#         response = JsonResponse({'success': 'Cart synchronized successfully'})
+#         response.set_cookie('guest_cart', json.dumps(guest_cart), max_age=7 * 24 * 60 * 60)
+#         return response
+
+#     except requests.RequestException as e:
+#         return JsonResponse({'error': f'Network error: {str(e)}'}, status=500)
+    
 def remove_from_cart_view(request):
     if request.method == "POST":
         product_id = request.POST.get('product_id')
@@ -212,11 +330,6 @@ def userpanel_view(request):
     ]
 
     context = {
-        'user_info': {
-            'name': 'نام کاربر', 
-            'email': 'ایمیل کاربر',
-            'phone': 'شماره تلفن کاربر',
-        },
         'user_orders': formatted_orders,
     }
 

@@ -8,12 +8,48 @@
         <!-- بخش اطلاعات کاربری -->
         <div class="bg-gray-50 p-4 rounded-lg shadow">
             <h2 class="text-lg font-bold mb-4">اطلاعات پروفایل</h2>
-            <ul class="space-y-2 text-gray-600">
-                <li><strong>نام:</strong> {{ user_info.name }}</li>
-                <li><strong>ایمیل:</strong> {{ user_info.email }}</li>
-                <li><strong>شماره تلفن:</strong> {{ user_info.phone }}</li>
+            <ul class="user-info bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-300 rounded-xl p-6 max-w-md mx-auto shadow-lg text-gray-700 space-y-4">
+                <li class="flex justify-between items-center border-b border-gray-200 pb-2">
+                    <strong class="text-blue-600">نام:</strong> 
+                    <span>{{ user_info.first_name }}</span>
+                </li>
+                <li class="flex justify-between items-center border-b border-gray-200 pb-2">
+                    <strong class="text-blue-600">نام خانوادگی:</strong> 
+                    <span>{{ user_info.last_name }}</span>
+                </li>
+                <li class="flex justify-between items-center border-b border-gray-200 pb-2">
+                    <strong class="text-blue-600">یوزرنیم:</strong> 
+                    <span>{{ user_info.username }}</span>
+                </li>
+                <li class="flex justify-between items-center border-b border-gray-200 pb-2">
+                    <strong class="text-blue-600">ایمیل:</strong> 
+                    <span>{{ user_info.email }}</span>
+                </li>
+                <li class="flex justify-between items-center">
+                    <strong class="text-blue-600">شماره تلفن:</strong> 
+                    <span>{{ user_info.phone_number }}</span>
+                </li>
             </ul>
-            <a href="#" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">ویرایش اطلاعات</a>
+            <button id="edit-info-button" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">ویرایش اطلاعات</button>
+        </div>
+        <div id="edit-info-form" class="hidden bg-gray-50 p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-bold mb-4">ویرایش اطلاعات</h2>
+            <form id="update-profile-form">
+                <div class="mb-4">
+                    <label for="first_name" class="block text-gray-700 font-bold">نام</label>
+                    <input type="text" id="first_name" name="first_name" class="w-full mt-2 p-2 border rounded" placeholder="نام خود را وارد کنید" value="{{ user_info.first_name }}">
+                </div>
+                <div class="mb-4">
+                    <label for="last_name" class="block text-gray-700 font-bold">نام خانوادگی</label>
+                    <input type="text" id="last_name" name="last_name" class="w-full mt-2 p-2 border rounded" placeholder="نام خانوادگی خود را وارد کنید" value="{{ user_info.last_name }}">
+                </div>
+                <div class="mb-4">
+                    <label for="phone_number" class="block text-gray-700 font-bold">شماره تلفن</label>
+                    <input type="text" id="phone_number" name="phone_number" class="w-full mt-2 p-2 border rounded" placeholder="شماره تلفن خود را وارد کنید" value="{{ user_info.phone_number }}">
+                </div>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">ثبت</button>
+                <button type="button" id="cancel-edit-button" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">لغو</button>
+            </form>
         </div>
 
         <!-- بخش سفارش‌ها -->
@@ -59,4 +95,69 @@
         </div>
     </div>
 </div>
+<script>
+    const editButton = document.getElementById('edit-info-button');
+    const editForm = document.getElementById('edit-info-form');
+    const cancelButton = document.getElementById('cancel-edit-button');
+
+    editButton.addEventListener('click', () => {
+        editForm.classList.remove('hidden');
+    });
+
+    cancelButton.addEventListener('click', () => {
+        editForm.classList.add('hidden');
+    });
+
+// تابعی برای گرفتن مقدار یک کوکی بر اساس نام
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
+// ارسال درخواست PUT به API با توکن از کوکی
+const updateForm = document.getElementById('update-profile-form');
+updateForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const firstName = document.getElementById('first_name').value;
+    const lastName = document.getElementById('last_name').value;
+    const phoneNumber = document.getElementById('phone_number').value;
+
+    // گرفتن توکن از کوکی
+    const accessToken = getCookie('access_token');
+    if (!accessToken) {
+        alert('توکن دسترسی یافت نشد. لطفاً دوباره وارد شوید.');
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:8000/api/customers/update-profile/', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}` // ارسال توکن
+            },
+            body: JSON.stringify({
+                first_name: firstName,
+                last_name: lastName,
+                phone_number: phoneNumber
+            })
+        });
+
+        if (response.ok) {
+            alert('اطلاعات با موفقیت به‌روزرسانی شد.');
+            location.reload(); // صفحه را مجدداً بارگذاری کنید تا اطلاعات جدید نمایش داده شود
+        } else {
+            const errorData = await response.json();
+            alert(`خطا در به‌روزرسانی اطلاعات: ${JSON.stringify(errorData)}`);
+        }
+    } catch (error) {
+        console.error('خطا در ارسال درخواست:', error);
+        alert('مشکلی در ارتباط با سرور به وجود آمد.');
+    }
+});
+
+</script>
 {% endblock %}

@@ -21,6 +21,10 @@ def user_info_processor(request):
             return {
                 'user_info': {
                     'username': user_data.get('username'),
+                    'email' : user_data.get('email'),
+                    'phone_number': user_data.get('phone_number'),
+                    'first_name' : user_data.get('first_name'),
+                    'last_name' : user_data.get('last_name')
                 }
             }
         else:

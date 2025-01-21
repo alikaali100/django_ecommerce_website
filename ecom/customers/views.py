@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.utils.timezone import now
 from .models import Customer
-from .serializers import CustomerSerializer, OTPSerializer
+from .serializers import CustomerSerializer, OTPSerializer, UpdateCustomerSerializer
 from django.core.mail import send_mail
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authentication import authenticate
@@ -128,6 +128,18 @@ class UserProfileView(APIView):
         return Response({
             "username": user.username,
             "email": user.email,
-            "phonenumber": user.phone_number,
+            "phone_number": user.phone_number,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
         })
     
+class UpdateProfileView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]  # مطمئن شوید که کاربر احراز هویت شده است
+
+    def put(self, request):
+        serializer = UpdateCustomerSerializer(instance=request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Profile updated successfully.", "data": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -58,24 +58,35 @@
 
         <!-- دکمه ادامه به پرداخت -->
         <div class="mt-6">
-            <a href="{% url 'checkout' %}" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">ادامه به پرداخت</a>
+            <a href="{% url 'checkout' %}"  class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">ادامه به پرداخت</a>
         </div>
     {% else %}
         <!-- پیام خالی بودن سبد خرید -->
         <p class="text-gray-600">سبد خرید شما خالی است.</p>
     {% endif %}
 </div>
+
 <script>
-    async function updateQuantity(productId, quantity) {
-        const url = 'http://localhost:8000/api/cart/add/';
-        const token = getCookie('access_token'); // تابعی برای گرفتن توکن از کوکی
+async function updateQuantity(productId, quantity) {
+    console.log(`Updating quantity for product ${productId} to ${quantity}`);
+    const token = getCookie('access_token');
     
+    // بررسی اینکه تعداد وارد شده صحیح است یا نه
+    if (isNaN(quantity) || quantity <= 0) {
+        alert('تعداد محصول باید عددی مثبت باشد.');
+        return;
+    }
+
+    if (token) {
+        // ارسال به API برای به‌روزرسانی در سرور
+        const url = 'http://localhost:8000/api/cart/add/';
         const data = {
             product: productId,
             quantity: parseInt(quantity, 10)
         };
-    
+
         try {
+            console.log('Sending data to server:', data);
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -84,27 +95,58 @@
                 },
                 body: JSON.stringify(data)
             });
-    
+
             if (response.ok) {
                 const result = await response.json();
+                console.log('Server response:', result);
                 alert('تعداد به‌روزرسانی شد!');
                 window.location.reload();
             } else {
+                console.error('Error from server, status:', response.status);
                 alert('خطایی رخ داد. لطفاً دوباره تلاش کنید.');
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error during API request:', error);
             alert('خطای شبکه! لطفاً اتصال خود را بررسی کنید.');
         }
+    } else {
+        // به روزرسانی کوکی برای کاربرانی که لاگین نکرده‌اند
+        console.log('User is not logged in, updating cart in cookies');
+        const cart = JSON.parse(getCookie('guest_cart') || '[]');
+        console.log('Current cart from cookie:', cart);
+
+        const productIndex = cart.findIndex(item => item.product === productId);
+
+        if (productIndex !== -1) {
+            cart[productIndex].quantity = parseInt(quantity, 10);
+            console.log(`Updated product ${productId} quantity to ${quantity}`);
+        } else {
+            console.warn(`Product ${productId} not found in cart`);
+        }
+
+        setCookie('guest_cart', JSON.stringify(cart), 7); // به روزرسانی کوکی
+        console.log('Updated cart in cookie:', cart);
+        alert('تعداد به‌روزرسانی شد!');
+        window.location.reload(); // صفحه را دوباره بارگذاری می‌کنیم
     }
-    
-    // تابع برای گرفتن کوکی
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-    }
-    </script>
-    
+}
+
+
+// تابع برای گرفتن کوکی
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
+// تابع برای ست کردن کوکی
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    const expires = `expires=${d.toUTCString()}`;
+    document.cookie = `${name}=${value};${expires};path=/`;
+}
+
+</script>
 {% endblock %}
