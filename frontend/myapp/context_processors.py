@@ -10,7 +10,7 @@ def user_info_processor(request):
             return {'user_info': None}
         return {'user_info': None}
     
-    user_info_url = f"{settings.BACKEND_URL}/api/customers/me/"
+    user_info_url = f"http://backend:8000/api/customers/me/"
     headers = {'Authorization': f'Bearer {access_token}'}
     
     try:

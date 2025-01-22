@@ -6,12 +6,12 @@ import json
 
 def products_view(request):
     try:
-        response = requests.get('http://localhost:8000/api/products/')
+        response = requests.get('http://backend:8000/api/products/')
         if response.status_code == 200:
             products = response.json()
         else:
             products = []
-        category_response = requests.get('http://127.0.0.1:8000/api/categories/')
+        category_response = requests.get('http://backend:8000/api/categories/')
         if category_response.status_code == 200:
             categories = category_response.json()
         else:
@@ -32,7 +32,7 @@ def products_view(request):
 
 def home_view(request):
     try:
-        response = requests.get('http://localhost:8000/api/products/discounted/')
+        response = requests.get('http://backend:8000/api/products/discounted/')
         if response.status_code == 200:
             data = response.json()  
         else:
@@ -52,7 +52,7 @@ def register_view(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        response = requests.post(f"{API_BASE_URL}/api/customers/register/", data={
+        response = requests.post(f"http://backend:8000/api/customers/register/", data={
             "username": username,
             "email": email,
             "password": password
@@ -66,14 +66,14 @@ def register_view(request):
 
     return render(request, "register.html")
     
-API_BASE_URL = "http://127.0.0.1:8000" 
+# API_BASE_URL = "http://127.0.0.1:8000" 
 
 def login_view(request):
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        response = requests.post(f"{API_BASE_URL}/api/customers/login/", data={"email": email, "password": password})
+        response = requests.post(f"http://backend:8000/api/customers/login/", data={"email": email, "password": password})
 
         if response.status_code == 200:
             return render(request, "login.html")
@@ -88,7 +88,7 @@ from django.http import HttpResponse
 def logout_view(request):
     try:
         response = requests.post(
-            f"{API_BASE_URL}/api/customers/logout/",
+            f"http://backend:8000/api/customers/logout/",
             cookies=request.COOKIES, 
         )
         
@@ -102,11 +102,11 @@ def logout_view(request):
         # Handle network error
         print(f"Logout Error: {e}")
         return HttpResponse("An error occurred while logging out. Please try again later.", status=500)
-
 from django.http import Http404
+
 def product_detail_view(request, product_id):
-    product_api_url = f"http://localhost:8000/api/products/{product_id}/"
-    features_api_url = f"http://localhost:8000/api/product-features/"
+    product_api_url = f"http://backend:8000/api/products/{product_id}/"
+    features_api_url = f"http://backend:8000/api/product-features/"
 
     try:
         product_response = requests.get(product_api_url)
@@ -125,11 +125,10 @@ def product_detail_view(request, product_id):
         raise Http404("Product or features not found")
 
     return render(request, 'product_detail.html', {'product': product})
-
 def search_products_view(request):
     query = request.GET.get('q', '')  
     try:
-        response = requests.get(f'http://localhost:8000/api/products/?search={query}')
+        response = requests.get(f'http://backend:8000/api/products/?search={query}')
         if response.status_code == 200:
             products = response.json()
         else:
@@ -155,7 +154,7 @@ def cart_view(request):
 
     if token:
         # اگر اکسس توکن وجود داشته باشد، اطلاعات سبد خرید را از API دریافت می‌کنیم
-        api_url = "http://localhost:8000/api/cart/"
+        api_url = "http://backend:8000/api/cart/"
         headers = {"Authorization": f"Bearer {token}"}
         response = requests.get(api_url, headers=headers)
 
@@ -179,7 +178,7 @@ def cart_view(request):
                 guest_cart = []
 
         # آدرس API محصولات
-        products_api_url = "http://localhost:8000/api/products/"
+        products_api_url = "http://backend:8000/api/products/"
         products_response = requests.get(products_api_url)
 
         if products_response.status_code == 200:
@@ -207,85 +206,11 @@ def cart_view(request):
         'cart_items': cart_items,
         'total_price': total_price,
     })
-# def sync_cart(request):
-#     if not request.user.is_authenticated:
-#         return JsonResponse({'error': 'User not authenticated'}, status=401)
 
-#     # گرفتن توکن از هدر درخواست
-#     token = request.headers.get('Authorization', None)
-#     if not token:
-#         return JsonResponse({'error': 'Access token is required'}, status=400)
-
-#     # خواندن کوکی
-#     guest_cart_cookie = request.COOKIES.get('guest_cart', '[]')
-#     guest_cart = json.loads(guest_cart_cookie)
-
-#     # دریافت کارت از API
-#     try:
-#         response = requests.get(
-#             "http://localhost:8000/api/cart/",
-#             headers={'Authorization': token}
-#         )
-#         if response.status_code != 200:
-#             return JsonResponse({'error': 'Failed to fetch cart from API'}, status=response.status_code)
-
-#         user_cart = response.json()
-#         user_cart_dict = {str(item['product']): item['quantity'] for item in user_cart}
-
-#         # حالت 1: اقلامی که فقط در کوکی هستند
-#         for item in guest_cart:
-#             product_id = str(item['product'])
-#             quantity = item['quantity']
-#             if product_id not in user_cart_dict:
-#                 # اضافه کردن به دیتابیس
-#                 data = {
-#                     'product': product_id,
-#                     'quantity': quantity
-#                 }
-#                 add_response = requests.post(
-#                     "http://localhost:8000/api/cart/add/",
-#                     headers={'Authorization': token, 'Content-Type': 'application/json'},
-#                     data=json.dumps(data)
-#                 )
-#                 if add_response.status_code != 200:
-#                     return JsonResponse({'error': 'Failed to add item to database'}, status=add_response.status_code)
-
-#         # حالت 2: اقلامی که فقط در دیتابیس هستند
-#         for product_id, quantity in user_cart_dict.items():
-#             if not any(item['product'] == int(product_id) for item in guest_cart):
-#                 # اضافه کردن به کوکی
-#                 guest_cart.append({'product': int(product_id), 'quantity': quantity})
-
-#         # حالت 3: اقلامی که در هر دو هستند ولی تعداد متفاوت است
-#         for item in guest_cart:
-#             product_id = str(item['product'])
-#             quantity = item['quantity']
-#             if product_id in user_cart_dict and user_cart_dict[product_id] != quantity:
-#                 # به‌روزرسانی تعداد در دیتابیس
-#                 data = {
-#                     'product': product_id,
-#                     'quantity': quantity
-#                 }
-#                 update_response = requests.post(
-#                     "http://localhost:8000/api/cart/add/",
-#                     headers={'Authorization': token, 'Content-Type': 'application/json'},
-#                     data=json.dumps(data)
-#                 )
-#                 if update_response.status_code != 200:
-#                     return JsonResponse({'error': 'Failed to update item in database'}, status=update_response.status_code)
-
-#         # به‌روزرسانی کوکی
-#         response = JsonResponse({'success': 'Cart synchronized successfully'})
-#         response.set_cookie('guest_cart', json.dumps(guest_cart), max_age=7 * 24 * 60 * 60)
-#         return response
-
-#     except requests.RequestException as e:
-#         return JsonResponse({'error': f'Network error: {str(e)}'}, status=500)
-    
 def remove_from_cart_view(request):
     if request.method == "POST":
         product_id = request.POST.get('product_id')
-        api_url = "http://localhost:8000/api/cart/remove/"
+        api_url = "http://backend:8000/api/cart/remove/"
 
         token = request.COOKIES.get('access_token')
         headers = {
@@ -306,7 +231,7 @@ def checkout_view(request):
     return render(request,'checkout.html')
 
 def userpanel_view(request):
-    api_url = "http://localhost:8000/api/cart/orders/"
+    api_url = "http://backend:8000/api/cart/orders/"
     token = request.COOKIES.get('access_token')
     headers = {
         "Authorization": f"Bearer {token}"
@@ -334,3 +259,21 @@ def userpanel_view(request):
     }
 
     return render(request, 'user_panel.html', context)
+
+def get_total_price(request):
+    total_price = 0
+
+    # بررسی وجود اکسس توکن
+    token = request.COOKIES.get('access_token')
+
+    if token:
+        # اگر اکسس توکن وجود داشته باشد، اطلاعات سبد خرید را از API دریافت می‌کنیم
+        api_url = "http://backend:8000/api/cart/"
+        headers = {"Authorization": f"Bearer {token}"}
+        response = requests.get(api_url, headers=headers)
+
+        if response.status_code == 200:
+            data = response.json()
+            total_price = data.get('total_price', 0)
+
+    return JsonResponse({"total_price": total_price})

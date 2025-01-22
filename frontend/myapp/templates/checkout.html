@@ -46,7 +46,7 @@
         </form>
         <div class="mt-6 border-t pt-4">
             <h2 class="text-xl font-bold">جمع کل</h2>
-            <p class="text-gray-600">قیمت کل: <span class="convert-to-persian">{{ total_price }}</span> تومان</p>
+            <p class="text-gray-600">قیمت کل: <span id="total-price" class="convert-to-persian">{{ total_price }}</span> تومان</p>
         </div>
     </div>
 
@@ -76,7 +76,7 @@
         </form>
     </div>
 </div>
-<script>
+<!-- <script>
     $(document).ready(function() {
         $('#apply-discount').on('click', function(e) {
             e.preventDefault();
@@ -103,6 +103,65 @@
                 success: function(response) {
                     alert('کد تخفیف اعمال شد!');
                     // به‌روزرسانی جمع کل در صفحه
+                    $('#total-price').text(response.total_price);
+                },
+                error: function(xhr) {
+                    alert(`خطا: ${xhr.responseJSON.detail || 'مشکلی پیش آمد.'}`);
+                }
+            });
+        });
+    });
+</script> -->
+<script>
+    $(document).ready(function() {
+        // Function to fetch total price
+        function fetchTotalPrice() {
+            const token = document.cookie.split('; ').find(row => row.startsWith('access_token=')).split('=')[1];
+            $.ajax({
+                url: 'http://localhost:8000/api/cart/',
+                type: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                success: function(response) {
+                    // Update total price on the page
+                    $('#total-price').text(response.total_price);
+                },
+                error: function(xhr) {
+                    console.error('Error fetching total price:', xhr.responseJSON.detail || 'An error occurred.');
+                }
+            });
+        }
+
+        // Call fetchTotalPrice on page load
+        fetchTotalPrice();
+
+        // Apply discount logic
+        $('#apply-discount').on('click', function(e) {
+            e.preventDefault();
+
+            const token = document.cookie.split('; ').find(row => row.startsWith('access_token=')).split('=')[1];
+            
+            const payload = {
+                discount_code: $('#discount-code').val(),
+                new_address: {
+                    province: $('#province').val(),
+                    city: $('#city').val(),
+                    detailed_address: $('#detailed_address').val()
+                }
+            };
+
+            $.ajax({
+                url: 'http://localhost:8000/api/cart/checkout/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                success: function(response) {
+                    alert('کد تخفیف اعمال شد!');
+                    // Update total price after applying the discount
                     $('#total-price').text(response.total_price);
                 },
                 error: function(xhr) {
