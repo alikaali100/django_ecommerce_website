@@ -9,6 +9,18 @@ from django.utils import timezone
 from django.utils.timezone import now
 
 class AddToCartAPIView(APIView):
+    """
+    Adds a product to the user's cart or updates the quantity of an existing product in the cart.
+
+    POST request payload:
+    - product: ID of the product to add.
+    - quantity: Quantity of the product (default is 1).
+
+    Responses:
+    - 401 Unauthorized: If the user is not authenticated.
+    - 404 Not Found: If the product does not exist.
+    - 200 OK: If the cart is updated successfully.
+    """
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response(
@@ -40,13 +52,10 @@ class AddToCartAPIView(APIView):
             new_quantity = int(quantity)
 
             if new_quantity > current_quantity:
-                # Increase quantity directly
                 cart_item.quantity += new_quantity - current_quantity
             elif new_quantity < current_quantity:
-                # Decrease quantity directly
                 cart_item.quantity -= current_quantity - new_quantity
 
-                # If quantity becomes zero, delete the item
                 if cart_item.quantity <= 0:
                     cart_item.delete()
                     return Response(
@@ -62,8 +71,19 @@ class AddToCartAPIView(APIView):
             {"detail": "Cart updated successfully."},
             status=status.HTTP_200_OK,
         )
-    
+
 class CartAPIView(APIView):
+    """
+    Retrieves the user's cart details.
+
+    GET request:
+    - Returns cart items, total price, and total quantity.
+
+    Responses:
+    - 401 Unauthorized: If the user is not authenticated.
+    - 404 Not Found: If the cart or cart items are not found.
+    - 200 OK: If the cart details are retrieved successfully.
+    """
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response(
@@ -116,8 +136,18 @@ class CartAPIView(APIView):
             status=status.HTTP_200_OK,
         )
 
-
 class RemoveFromCartAPIView(APIView):
+    """
+    Removes a product from the user's cart.
+
+    DELETE request payload:
+    - product: ID of the product to remove.
+
+    Responses:
+    - 401 Unauthorized: If the user is not authenticated.
+    - 404 Not Found: If the product or cart does not exist.
+    - 200 OK: If the product is removed from the cart successfully.
+    """
     def delete(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response(
@@ -162,9 +192,22 @@ class RemoveFromCartAPIView(APIView):
             {"detail": "Item removed from cart successfully."},
             status=status.HTTP_200_OK,
         )
-    
 
 class CheckoutAPIView(APIView):
+    """
+    Handles the checkout process for the user's cart.
+
+    POST request payload:
+    - discount_code: (Optional) Discount code to apply.
+    - address: ID of the user's address.
+    - new_address: (Optional) New address details if no existing address is provided.
+
+    Responses:
+    - 401 Unauthorized: If the user is not authenticated.
+    - 404 Not Found: If the cart is not found.
+    - 400 Bad Request: If the discount code or address is invalid.
+    - 200 OK: If the order is placed successfully.
+    """
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response(
@@ -182,14 +225,11 @@ class CheckoutAPIView(APIView):
 
         total_price = cart.total_price 
         discount_code = request.data.get('discount_code')
-        print(discount_code)
         discount_amount = 0
 
         if discount_code:
             try:
                 discount = DiscountCode.objects.get(code=discount_code)
-                print(discount)
-                print(discount_code)
                 current_time = timezone.now()
                 if discount.start_date > current_time or discount.end_date < current_time:
                     return Response(
@@ -219,7 +259,6 @@ class CheckoutAPIView(APIView):
                 )
 
         final_price = max(total_price - discount_amount, 0)
-        # Handle address
         customer = request.user
         address_id = request.data.get('address')
         address = None
@@ -248,14 +287,13 @@ class CheckoutAPIView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        # Create order
         order = Order.objects.create(
             customer=customer,
             address=address,
             discount_code=discount,
             total_amount=final_price  
         )
-        # Retrieve cart and create order items
+
         cart_items = CartItem.objects.filter(cart=cart)
 
         for cart_item in cart_items:
@@ -268,7 +306,6 @@ class CheckoutAPIView(APIView):
                 discount_amount=item_discount_amount  
             )
 
-        # Clear the cart
         cart_items.delete()
 
         return Response(
@@ -276,9 +313,18 @@ class CheckoutAPIView(APIView):
             status=status.HTTP_200_OK,
         )
 
-
-
 class OrderListAPIView(APIView):
+    """
+    Retrieves the list of orders for the authenticated user.
+
+    GET request:
+    - Returns all orders placed by the user, sorted by creation date (most recent first).
+
+    Responses:
+    - 401 Unauthorized: If the user is not authenticated.
+    - 404 Not Found: If no orders exist for the user.
+    - 200 OK: If the orders are retrieved successfully.
+    """
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response(
@@ -298,8 +344,20 @@ class OrderListAPIView(APIView):
 
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
 class ValidateDiscountAPIView(APIView):
+    """
+    Validates a discount code and calculates the discounted price.
+
+    POST request payload:
+    - discount_code: The discount code to validate.
+
+    Responses:
+    - 401 Unauthorized: If the user is not authenticated.
+    - 404 Not Found: If the cart is not found.
+    - 400 Bad Request: If the discount code is invalid or expired.
+    - 200 OK: If the discount code is valid and the final price is calculated.
+    """
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response(
@@ -325,7 +383,6 @@ class ValidateDiscountAPIView(APIView):
                 discount = DiscountCode.objects.get(code=discount_code)
                 current_time = timezone.now()
 
-                # Validate discount code
                 if discount.start_date > current_time or discount.end_date < current_time:
                     return Response(
                         {"detail": "Discount code is expired."},
@@ -338,10 +395,9 @@ class ValidateDiscountAPIView(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-                # Calculate discount amount
-                if discount.type == 'PG':  # Percentage discount
+                if discount.type == 'PG':  
                     discount_amount = total_price * discount.amount / 100
-                elif discount.type == 'FA':  # Fixed amount discount
+                elif discount.type == 'FA':  
                     discount_amount = discount.amount
 
                 if discount.max_amount:
