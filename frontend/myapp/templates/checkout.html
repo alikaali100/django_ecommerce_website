@@ -78,13 +78,63 @@
 </div>
 <!-- <script>
     $(document).ready(function() {
+        // Function to fetch total price
+        function fetchTotalPrice() {
+            const token = document.cookie.split('; ').find(row => row.startsWith('access_token=')).split('=')[1];
+            $.ajax({
+                url: 'http://localhost:8000/api/cart/',
+                type: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                success: function(response) {
+                    // Update total price on the page
+                    $('#total-price').text(response.total_price);
+                },
+                error: function(xhr) {
+                    console.error('Error fetching total price:', xhr.responseJSON.detail || 'An error occurred.');
+                }
+            });
+        }
+
+        // Call fetchTotalPrice on page load
+        fetchTotalPrice();
+
+        // Apply discount logic
         $('#apply-discount').on('click', function(e) {
             e.preventDefault();
 
             const token = document.cookie.split('; ').find(row => row.startsWith('access_token=')).split('=')[1];
-
             const payload = {
-                discount_code: $('#discount-code').val(),
+                discount_code: $('#discount-code').val()
+            };
+
+            $.ajax({
+                url: 'http://localhost:8000/api/cart/validate-discount/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                success: function(response) {
+                    alert('کد تخفیف اعمال شد!');
+                    // Update total price after applying the discount
+                    $('#total-price').text(response.final_price);
+                },
+                error: function(xhr) {
+                    alert(`خطا: ${xhr.responseJSON.detail || 'مشکلی پیش آمد.'}`);
+                }
+            });
+        });
+
+        // Handle checkout logic
+        $('form[action="#"]').on('submit', function(e) {
+            e.preventDefault();
+
+            const token = document.cookie.split('; ').find(row => row.startsWith('access_token=')).split('=')[1];
+            const payload = {
+                payment_method: $('input[name="payment_method"]:checked').val(),
                 new_address: {
                     province: $('#province').val(),
                     city: $('#city').val(),
@@ -101,12 +151,11 @@
                     'Authorization': `Bearer ${token}`
                 },
                 success: function(response) {
-                    alert('کد تخفیف اعمال شد!');
-                    // به‌روزرسانی جمع کل در صفحه
-                    $('#total-price').text(response.total_price);
+                    alert('پرداخت با موفقیت انجام شد!');
+                    window.location.reload(); // Reload the page after successful payment
                 },
                 error: function(xhr) {
-                    alert(`خطا: ${xhr.responseJSON.detail || 'مشکلی پیش آمد.'}`);
+                    alert(`خطا در پرداخت: ${xhr.responseJSON.detail || 'مشکلی پیش آمد.'}`);
                 }
             });
         });
@@ -141,9 +190,37 @@
             e.preventDefault();
 
             const token = document.cookie.split('; ').find(row => row.startsWith('access_token=')).split('=')[1];
-            
             const payload = {
-                discount_code: $('#discount-code').val(),
+                discount_code: $('#discount-code').val()
+            };
+
+            $.ajax({
+                url: 'http://localhost:8000/api/cart/validate-discount/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                success: function(response) {
+                    alert('کد تخفیف اعمال شد!');
+                    // Update total price after applying the discount
+                    $('#total-price').text(response.final_price);
+                },
+                error: function(xhr) {
+                    alert(`خطا: ${xhr.responseJSON.detail || 'مشکلی پیش آمد.'}`);
+                }
+            });
+        });
+
+        // Handle checkout logic
+        $('form[action="#"]').on('submit', function(e) {
+            e.preventDefault();
+
+            const token = document.cookie.split('; ').find(row => row.startsWith('access_token=')).split('=')[1];
+            const payload = {
+                payment_method: $('input[name="payment_method"]:checked').val(),
+                discount_code: $('#discount-code').val(), // Include discount code
                 new_address: {
                     province: $('#province').val(),
                     city: $('#city').val(),
@@ -160,12 +237,11 @@
                     'Authorization': `Bearer ${token}`
                 },
                 success: function(response) {
-                    alert('کد تخفیف اعمال شد!');
-                    // Update total price after applying the discount
-                    $('#total-price').text(response.total_price);
+                    alert('پرداخت با موفقیت انجام شد!');
+                    window.location.reload(); // Reload the page after successful payment
                 },
                 error: function(xhr) {
-                    alert(`خطا: ${xhr.responseJSON.detail || 'مشکلی پیش آمد.'}`);
+                    alert(`خطا در پرداخت: ${xhr.responseJSON.detail || 'مشکلی پیش آمد.'}`);
                 }
             });
         });

@@ -298,3 +298,68 @@ class OrderListAPIView(APIView):
 
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class ValidateDiscountAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response(
+                {"detail": "Please log in to validate the discount code."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        discount_code = request.data.get('discount_code')
+
+        try:
+            cart = Cart.objects.get(customer=request.user)
+        except Cart.DoesNotExist:
+            return Response(
+                {"detail": "Cart not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        total_price = cart.total_price
+        discount_amount = 0
+
+        if discount_code:
+            try:
+                discount = DiscountCode.objects.get(code=discount_code)
+                current_time = timezone.now()
+
+                # Validate discount code
+                if discount.start_date > current_time or discount.end_date < current_time:
+                    return Response(
+                        {"detail": "Discount code is expired."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                if discount.usage_limit <= 0:
+                    return Response(
+                        {"detail": "Discount code has been used up."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                # Calculate discount amount
+                if discount.type == 'PG':  # Percentage discount
+                    discount_amount = total_price * discount.amount / 100
+                elif discount.type == 'FA':  # Fixed amount discount
+                    discount_amount = discount.amount
+
+                if discount.max_amount:
+                    discount_amount = min(discount_amount, discount.max_amount)
+
+            except DiscountCode.DoesNotExist:
+                return Response(
+                    {"detail": "Invalid discount code."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        final_price = max(total_price - discount_amount, 0)
+
+        return Response(
+            {
+                "detail": "Discount code validated successfully.",
+                "final_price": final_price,
+                "discount_amount": discount_amount,
+            },
+            status=status.HTTP_200_OK,
+        )
