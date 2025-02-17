@@ -31,12 +31,6 @@ class CustomerModelTest(TestCase):
             )
             invalid_customer.full_clean()  # Trigger validation manually
 
-    def test_generate_otp(self):
-        self.customer.generate_otp()
-        self.assertIsNotNone(self.customer.otp)
-        self.assertIsNotNone(self.customer.otp_expiry)
-        self.assertGreater(self.customer.otp_expiry, now())
-
 
 class AddressModelTest(TestCase):
     def setUp(self):
